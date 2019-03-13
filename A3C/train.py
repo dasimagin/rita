@@ -9,11 +9,12 @@ from model import ActorCritic
 def ensure_shared_grads(model, shared_model):
     for param, shared_param in zip(model.parameters(), shared_model.parameters()):
         if shared_param.grad is not None:
-            return
-        shared_param._grad = param.grad
+            shared_param._grad += param.grad
+        else:
+            shared_param._grad = param.grad
 
 
-def train(args, shared_model, total_steps, optimizer):
+def train(args, shared_model, total_steps, optimizer, lock):
     env = make_atari(args.env_name)
 
     model = ActorCritic(env.observation_space.shape[0], env.action_space.n)
@@ -82,6 +83,7 @@ def train(args, shared_model, total_steps, optimizer):
 
         (policy_loss + args.value_loss_coef * value_loss).backward()
         torch.nn.utils.clip_grad_norm_(model.parameters(), args.max_grad_norm)
-
-        ensure_shared_grads(model, shared_model)
-        optimizer.step()
+        
+        with lock:
+            ensure_shared_grads(model, shared_model)
+            optimizer.step()

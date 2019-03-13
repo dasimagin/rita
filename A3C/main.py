@@ -56,6 +56,7 @@ if __name__ == '__main__':
         
     processes = []
 
+    lock = mp.Lock()
     total_steps = Value('i', 0)
 
     p = mp.Process(target=test, args=(args, shared_model, total_steps, optimizer))
@@ -63,7 +64,7 @@ if __name__ == '__main__':
     processes.append(p)
 
     for _ in range(0, args.num_processes):
-        p = mp.Process(target=train, args=(args, shared_model, total_steps, optimizer))
+        p = mp.Process(target=train, args=(args, shared_model, total_steps, optimizer, lock))
         p.start()
         processes.append(p)
     for p in processes:
