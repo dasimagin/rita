@@ -1,5 +1,3 @@
-import gym
-import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -14,7 +12,6 @@ class ActorCritic(torch.nn.Module):
         self.conv4 = nn.Conv2d(32, 32, 3, stride=2, padding=1)
 
         self.lstm = nn.LSTMCell(32 * 6 * 6, 256)
-
         self.critic_linear = nn.Linear(256, 1)
         self.actor_linear = nn.Linear(256, n_actions)
 
@@ -24,8 +21,7 @@ class ActorCritic(torch.nn.Module):
         torch.nn.init.xavier_uniform_(self.conv4.weight)
         torch.nn.init.xavier_uniform_(self.critic_linear.weight)
         torch.nn.init.xavier_uniform_(self.actor_linear.weight)
-        
-        self.train()
+
         self.reset_hidden()
 
     def forward(self, inputs):
@@ -52,32 +48,3 @@ class ActorCritic(torch.nn.Module):
         
     def load_weights(self, path):
         self.load_state_dict(torch.load(path))
-        
-    def play_game(self, env):
-        state = env.reset()
-        self.reset_hidden()
-        done = False
-        total_reward = 0.0
-        episode_length = 0
-        
-        while not done:
-            state = torch.FloatTensor(state)
-            self.detach_hidden()
-            with torch.no_grad():
-                value, logit = self.forward(state.unsqueeze(0))
-            prob = F.softmax(logit, dim=-1)
-            action = prob.max(1, keepdim=True)[1].numpy()
-            state, reward, done, _ = env.step(action[0, 0])
-            total_reward += reward
-            episode_length += 1
-        
-        return total_reward, episode_length
-        
-    def record_video(self, env, games_count=2):
-        env_monitor = gym.wrappers.Monitor(env, directory='videos', force=True)
-        results = []
-        for _ in range(games_count):
-            reward, length = self.play_game(env_monitor)
-            results.append({'reward': reward, 'len': length})
-        env_monitor.close()
-        return results

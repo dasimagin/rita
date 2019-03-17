@@ -3,6 +3,7 @@ import logging
 
 from openai_wrappers import make_atari
 from model import ActorCritic
+from utils import record_video
 
 parser = argparse.ArgumentParser(description='A3C')
 parser.add_argument('--env-name', default='SpaceInvaders-v0',
@@ -23,7 +24,7 @@ if __name__ == '__main__':
     else:
         print("You have not specified path to model weigths, random plays will be performed")
     model.eval()
-    results = model.record_video(env)
+    results = record_video(model, env)
     log_message = "evaluated on pretrained weights: {}, results: {}".format(args.pretrained_weights, results)
     print(log_message)
     logging.info(log_message)

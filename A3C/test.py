@@ -2,11 +2,9 @@ import logging
 import numpy as np
 import time
 
-import torch
-import torch.nn.functional as F
-
 from openai_wrappers import make_atari
 from model import ActorCritic
+from utils import play_game
 
 
 def save_progress(args, model, optimizer, steps):
@@ -44,7 +42,7 @@ def test(args, shared_model, total_steps, optimizer):
         model.load_state_dict(shared_model.state_dict())
         if (len(reward_history) + 1) % args.save_frequency == 0:
             save_progress(args, model, optimizer, total_steps.value)
-        total_reward, _ = model.play_game(env)
+        total_reward, _ = play_game(model, env)
         reward_history.append(total_reward)
         
         log_message = "Time {}, num steps {}, FPS {:.0f}, curr episode reward {}, mean episode reward: {}".format(

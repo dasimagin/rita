@@ -1,6 +1,4 @@
-import itertools
 from collections import deque
-from copy import copy
 
 import gym
 import numpy as np
@@ -110,17 +108,6 @@ class FrameSkip(gym.Wrapper):
             if done: break
         return ob, totrew, done, info
 
-
-class OneChannel(gym.ObservationWrapper):
-    def __init__(self, env, crop=True):
-        self.crop = crop
-        super(OneChannel, self).__init__(env)
-        assert env.observation_space.dtype == np.uint8
-        self.observation_space = gym.spaces.Box(low=0, high=255, shape=(84, 84, 1), dtype=np.uint8)
-
-    def observation(self, obs):
-        return obs[:, :, 2:3]
-
     
 class NoopResetEnv(gym.Wrapper):
     def __init__(self, env, noop_max=30):
@@ -229,15 +216,6 @@ class ImageToPyTorch(gym.ObservationWrapper):
 
     def observation(self, observation):
         return np.swapaxes(observation, 2, 0)
-
-
-class NoReward(gym.Wrapper):
-    def __init__(self, env):
-        gym.Wrapper.__init__(self, env)
-
-    def step(self, action):
-        ob, rew, done, info = self.env.step(action)
-        return ob, 0.0, done, info
     
 
 class ClipRewardEnv(gym.RewardWrapper):
