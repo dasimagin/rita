@@ -9,7 +9,7 @@ def xavier_weights_init(layer):
         nn.init.xavier_uniform_(layer.weight)
 
 
-class ActorCriticLSTM(torch.nn.Module):
+class ActorCriticRNN(torch.nn.Module):
     def __init__(self, observation_shape, n_actions):
         super(ActorCriticLSTM, self).__init__()
         self.cnn_features = nn.Sequential(
