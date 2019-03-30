@@ -1,0 +1,17 @@
+train:
+    # optimizer
+    learning_rate: 0.0001
+    max-grad-norm: 5
+
+    # a3c
+    agent_n: 4
+    update_agent_n: 20
+
+    # loss
+    gamma: 0.99 # train discount coef
+    tau: 1.00 # GAE parameter
+    value_weight: 0.5
+    entropy_weight: 0.01
+
+environment:
+    # Nope... :(

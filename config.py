@@ -1,4 +1,4 @@
-import json
+import yaml
 
 class Config(object):
     """
@@ -19,9 +19,9 @@ class Config(object):
             self.__dict__[key] = value
 
     @staticmethod
-    def fromJsonFile(path):
+    def fromYamlFile(path):
         """
         path: path to json file
         """
         with open(path) as lines:
-            return Config(json.load(lines))
+            return Config(yaml.safe_load(lines))
