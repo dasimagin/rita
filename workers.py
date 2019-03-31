@@ -10,6 +10,7 @@ from utils import ensure_shared_grads, play_game, save_progress
 
 
 def train_worker(args, shared_model, total_steps, optimizer, lock):
+    args = args.train
     env = make_atari(args.env_name)
 
     model = ActorCritic(env.observation_space.shape, env.action_space.n)
@@ -85,6 +86,7 @@ def train_worker(args, shared_model, total_steps, optimizer, lock):
 
 
 def test_worker(args, shared_model, total_steps, optimizer):
+    args = args.train
     logging.basicConfig(filename=args.logs_path, level=logging.INFO)
     logging.info("STARTED TRAINING PROCESS {}".format(time.strftime("%Y.%m.%d_%H:%M", time.localtime())))
 

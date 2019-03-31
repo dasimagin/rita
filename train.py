@@ -22,8 +22,7 @@ parser.add_argument('--pretrained-weights', default=None,
 if __name__ == '__main__':
     cmd_args = parser.parse_args()
     config = Config.fromYamlFile(cmd_args.config_path)
-    args = config.train
-    args.__dict__.update(vars(cmd_args))
+    args.train.__dict__.update(vars(cmd_args))
 
     env = make_atari(args.env_name)
 

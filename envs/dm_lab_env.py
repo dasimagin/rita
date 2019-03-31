@@ -98,3 +98,19 @@ class Dmlab_env(gym.Env):
     @property
     def unwrapped(self):
         return self
+    
+    
+def make_dm_lab(args):
+    args = args.environment
+    env = Dmlab_env(args)
+    if args.clip_rewards:
+        env = ClipRewardEnv(env)
+    if args.skip_frames > 0:
+        env = MaxAndSkipEnv(env, skip=args.skip_frames)
+    if args.stack_frames > 1:
+        env = FrameStack(env, args.stack_frames)
+    env = ExtraTimeLimit(env, args.max_episode_steps)
+    env = ImageToPyTorch(env)
+    if args.normalize_env:
+        env = NormalizedEnv(env)
+    return env
