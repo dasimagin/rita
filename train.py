@@ -10,6 +10,8 @@ from workers import test_worker, train_worker
 from multiprocessing import Value
 
 parser = argparse.ArgumentParser(description='A3C')
+parser.add_argument('--config-path', required=True,
+                    help='path to config')
 parser.add_argument('--models-path', default="./saved_models",
                     help='path to saved models (default: `./saved_models`)')
 parser.add_argument('--logs-path', default="./log.txt",
@@ -19,7 +21,7 @@ parser.add_argument('--pretrained-weights', default=None,
 
 if __name__ == '__main__':
     cmd_args = parser.parse_args()
-    config = Config.fromYamlFile('config.yaml')
+    config = Config.fromYamlFile(cmd_args.config_path)
     args = config.train
     args.__dict__.update(vars(cmd_args))
 

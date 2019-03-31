@@ -27,7 +27,7 @@ def train_worker(args, shared_model, total_steps, optimizer, lock):
         rewards = []
         entropies = []
 
-        for step in range(args.num_steps):
+        for step in range(args.update_agent_frequency):
             value, logit = model(state.unsqueeze(0))
             prob = F.softmax(logit, dim=-1)
             log_prob = F.log_softmax(logit, dim=-1)
@@ -72,11 +72,11 @@ def train_worker(args, shared_model, total_steps, optimizer, lock):
             delta_t = rewards[i] + args.gamma * values[i + 1] - values[i]
             gae = gae * args.gamma * args.tau + delta_t
 
-            policy_loss = policy_loss - log_probs[i] * gae.detach() - args.entropy_coef * entropies[i]
+            policy_loss = policy_loss - log_probs[i] * gae.detach() - args.entropy_weight * entropies[i]
 
         optimizer.zero_grad()
 
-        (policy_loss + args.value_loss_coef * value_loss).backward()
+        (policy_loss + args.value_weight * value_loss).backward()
         torch.nn.utils.clip_grad_norm_(model.parameters(), args.max_grad_norm)
 
         with lock:

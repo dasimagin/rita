@@ -4,7 +4,7 @@ train:
     max_grad_norm: 5
 
     # a3c
-    agents_n: 4
+    agents_n: 16
     update_agent_frequency: 20
 
     # loss
@@ -15,6 +15,9 @@ train:
 
     # environment
     env_name: "SpaceInvaders-v0"
+    
+    # backups
+    save_frequency: 60
 
 environment:
     # Nope... :(
