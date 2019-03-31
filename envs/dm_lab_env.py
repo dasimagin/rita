@@ -71,20 +71,27 @@ class Dmlab_env(gym.Env):
         self.reward_range = (-float('inf'), float('inf'))
         self.seed_n = None
         self.np_random = np.random.RandomState()
+        self.reset()
 
     def step(self, action):
         act = self.action_space[action]
-        reward = self.env.step(act, num_steps=self.skip_n)
-        obs = self.env.observations()['RGB_INTERLEAVED']
-        done = False if self.env.is_running() else True
-        return obs, reward, done, None
+        reward = self.env.step(act, num_steps=1)
+        done = not self.env.is_running()
+        if not done:
+            obs = self.env.observations()['RGB_INTERLEAVED']
+        else:
+            obs = np.zeros(self.observation_space.shape)
+        return obs, reward, done, {}
 
     def reset(self):
         self.env.reset(seed=self.seed_n)
         return self.env.observations()['RGB_INTERLEAVED']
 
     def render(self, mode=None):
-        return self.env.observations()['RGB_INTERLEAVED']
+        if self.env.is_running():
+            return self.env.observations()['RGB_INTERLEAVED']
+        else:
+            return np.zeros(self.observation_space.shape, dtype=np.uint8)
 
     def close(self):
         self.env.close()
@@ -98,19 +105,3 @@ class Dmlab_env(gym.Env):
     @property
     def unwrapped(self):
         return self
-    
-    
-def make_dm_lab(args):
-    args = args.environment
-    env = Dmlab_env(args)
-    if args.clip_rewards:
-        env = ClipRewardEnv(env)
-    if args.skip_frames > 0:
-        env = MaxAndSkipEnv(env, skip=args.skip_frames)
-    if args.stack_frames > 1:
-        env = FrameStack(env, args.stack_frames)
-    env = ExtraTimeLimit(env, args.max_episode_steps)
-    env = ImageToPyTorch(env)
-    if args.normalize_env:
-        env = NormalizedEnv(env)
-    return env

@@ -254,20 +254,3 @@ class NormalizedEnv(gym.ObservationWrapper):
 
         return (observation - unbiased_mean) / (unbiased_std + 1e-8)
 
-
-def make_atari(args):
-    args = args.environment
-    env = gym.make(args.env_name)
-    env = NoopResetEnv(env, noop_max=args.noop_max)
-    if args.clip_rewards:
-        env = ClipRewardEnv(env)
-    if 'NoFrameskip' in env.spec.id:
-        env = MaxAndSkipEnv(env, skip=args.skip_frames)
-    env = ProcessFrame84(env, crop=False)
-    if args.stack_frames > 1:
-        env = FrameStack(env, args.stack_frames)
-    env = ExtraTimeLimit(env, args.max_episode_steps)
-    env = ImageToPyTorch(env)
-    if args.normalize_env:
-        env = NormalizedEnv(env)
-    return env

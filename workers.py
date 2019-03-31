@@ -4,13 +4,13 @@ import time
 import torch
 import torch.nn.functional as F
 
-from envs.common_wrappers import make_atari
+from envs.utils import make_env
 from models.actor_critic_rnn import ActorCriticRNN as ActorCritic
 from utils import ensure_shared_grads, play_game, save_progress
 
 
 def train_worker(args, shared_model, total_steps, optimizer, lock):
-    env = make_atari(args)
+    env = make_env(args)
     args = args.train
 
     model = ActorCritic(env.observation_space.shape, env.action_space.n)
@@ -86,7 +86,8 @@ def train_worker(args, shared_model, total_steps, optimizer, lock):
 
 
 def test_worker(args, shared_model, total_steps, optimizer):
-    env = make_atari(args)
+    args.environment.clip_rewards = False
+    env = make_env(args)
     
     logging.basicConfig(filename=args.train.logs_path, level=logging.INFO)
     logging.info("STARTED TRAINING PROCESS {}".format(time.strftime("%Y.%m.%d_%H:%M", time.localtime())))

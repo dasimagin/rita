@@ -26,4 +26,4 @@ environment:
     max_episode_steps: 1000000
     normalize_env: true
     noop_max: null
-    fps: 60
+    fps: 15

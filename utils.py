@@ -1,4 +1,4 @@
-import gym
+import gym.wrappers
 import logging
 import time
 import torch
@@ -35,18 +35,18 @@ def record_video(model, env, games_count=2):
 
 def save_progress(args, model, optimizer, steps):
     model_name = "{}_{}_{}".format(
-        args.env_name,
+        args.environment.env_name,
         time.strftime("%Y.%m.%d_%H:%M", time.localtime()),
         steps
     )
-    weights_path = "{}/weights/{}".format(args.models_path, model_name)
+    weights_path = "{}/weights/{}".format(args.train.models_path, model_name)
     model.save_weights(weights_path)
     log_message = "Wights were saved to {}".format(weights_path)
     print(log_message)
     logging.info(log_message)
 
     if optimizer is not None:
-        optimizer_params_path = "{}/optimizer_params/{}".format(args.models_path, model_name)
+        optimizer_params_path = "{}/optimizer_params/{}".format(args.train.models_path, model_name)
         optimizer.save_params(optimizer_params_path)
         log_message = "Optimizer's params were saved to {}".format(optimizer_params_path)
         print(log_message)

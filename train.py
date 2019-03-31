@@ -2,7 +2,7 @@ import argparse
 import torch.multiprocessing as mp
 
 from config import Config
-from envs.common_wrappers import make_atari
+from envs.utils import make_env
 from models.actor_critic_rnn import ActorCriticRNN as ActorCritic
 from optim.shared_optim import SharedAdam
 from workers import test_worker, train_worker
@@ -24,7 +24,7 @@ if __name__ == '__main__':
     config = Config.fromYamlFile(cmd_args.config_path)
     config.train.__dict__.update(vars(cmd_args))
 
-    env = make_atari(config)
+    env = make_env(config)
 
     shared_model = ActorCritic(env.observation_space.shape, env.action_space.n)
     if config.train.pretrained_weights is not None:

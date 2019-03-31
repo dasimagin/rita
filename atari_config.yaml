@@ -17,7 +17,7 @@ train:
     save_frequency: 60
 
 environment:
-    env_name: "SpaceInvadersNoFrameskip-v4"
+    env_name: "SpaceInvaders-v0"
     skip_frames: 4
     clip_rewards: false
     stack_frames: 1
