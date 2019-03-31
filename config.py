@@ -1,5 +1,6 @@
 import yaml
 
+
 class Config(object):
     """
     A configuration class that allows to refer parameters as object attributes
@@ -25,3 +26,4 @@ class Config(object):
         """
         with open(path) as lines:
             return Config(yaml.safe_load(lines))
+

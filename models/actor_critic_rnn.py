@@ -11,7 +11,7 @@ def xavier_weights_init(layer):
 
 class ActorCriticRNN(torch.nn.Module):
     def __init__(self, observation_shape, n_actions):
-        super(ActorCriticLSTM, self).__init__()
+        super(ActorCriticRNN, self).__init__()
         self.cnn_features = nn.Sequential(
             nn.Conv2d(observation_shape[0], 32, 3, stride=2, padding=1),
             nn.ELU(),
