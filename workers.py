@@ -10,8 +10,8 @@ from utils import ensure_shared_grads, play_game, save_progress
 
 
 def train_worker(args, shared_model, total_steps, optimizer, lock):
+    env = make_atari(args)
     args = args.train
-    env = make_atari(args.env_name)
 
     model = ActorCritic(env.observation_space.shape, env.action_space.n)
     model.train()
@@ -86,11 +86,11 @@ def train_worker(args, shared_model, total_steps, optimizer, lock):
 
 
 def test_worker(args, shared_model, total_steps, optimizer):
-    args = args.train
-    logging.basicConfig(filename=args.logs_path, level=logging.INFO)
+    env = make_atari(args)
+    
+    logging.basicConfig(filename=args.train.logs_path, level=logging.INFO)
     logging.info("STARTED TRAINING PROCESS {}".format(time.strftime("%Y.%m.%d_%H:%M", time.localtime())))
 
-    env = make_atari(args.env_name, clip=False)
     model = ActorCritic(env.observation_space.shape, env.action_space.n)
     model.eval()
 
@@ -99,7 +99,7 @@ def test_worker(args, shared_model, total_steps, optimizer):
     reward_history = []
     while True:
         model.load_state_dict(shared_model.state_dict())
-        if (len(reward_history) + 1) % args.save_frequency == 0:
+        if (len(reward_history) + 1) % args.train.save_frequency == 0:
             save_progress(args, model, optimizer, total_steps.value)
         total_reward, _ = play_game(model, env)
         reward_history.append(total_reward)

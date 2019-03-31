@@ -259,7 +259,7 @@ def make_atari(args):
     args = args.environment
     env = gym.make(args.env_name)
     env = NoopResetEnv(env, noop_max=args.noop_max)
-    if args.clip_reward:
+    if args.clip_rewards:
         env = ClipRewardEnv(env)
     if 'NoFrameskip' in env.spec.id:
         env = MaxAndSkipEnv(env, skip=args.skip_frames)
