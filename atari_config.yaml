@@ -1,7 +1,7 @@
 train:
     # optimizer
     learning_rate: 0.0001
-    max_grad_norm: 5
+    max_grad_norm: 50
 
     # a3c
     agents_n: 16
@@ -13,11 +13,17 @@ train:
     value_weight: 0.5
     entropy_weight: 0.01
 
-    # environment
-    env_name: "SpaceInvaders-v0"
-    
     # backups
     save_frequency: 60
 
 environment:
-    # Nope... :(
+    env_name: "SpaceInvadersNoFrameskip-v4"
+    skip_frames: 4
+    clip_rewards: false
+    stack_frames: 1
+    frame_h: 84
+    frame_w: 84
+    max_episode_steps: 4000
+    normalize_env: true
+    noop_max: 30
+    fps: null

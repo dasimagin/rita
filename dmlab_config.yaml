@@ -1,0 +1,29 @@
+train:
+    # optimizer
+    learning_rate: 0.0001
+    max_grad_norm: 50
+
+    # a3c
+    agents_n: 16
+    update_agent_frequency: 20
+
+    # loss
+    gamma: 0.99 # train discount coef
+    tau: 1.00 # GAE parameter
+    value_weight: 0.5
+    entropy_weight: 0.01
+
+    # backups
+    save_frequency: 60
+
+environment:
+    env_name: "seekavoid_arena_01"
+    skip_frames: 4
+    clip_rewards: false
+    stack_frames: 1
+    frame_h: 128
+    frame_w: 128
+    max_episode_steps: 1000000
+    normalize_env: true
+    noop_max: null
+    fps: 60

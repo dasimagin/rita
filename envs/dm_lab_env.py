@@ -71,7 +71,6 @@ class Dmlab_env(gym.Env):
         self.reward_range = (-float('inf'), float('inf'))
         self.seed_n = None
         self.np_random = np.random.RandomState()
-        self.skip_n = args.skip_frames
 
     def step(self, action):
         act = self.action_space[action]
