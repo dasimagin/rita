@@ -27,6 +27,7 @@ class ActorCriticRNN(torch.nn.Module):
         self.lstm = nn.LSTMCell(self.cnn_output_size, 256)
         self.critic_linear = nn.Linear(256, 1)
         self.actor_linear = nn.Linear(256, n_actions)
+        self.pixel_linear = nn.Linear(256, n_actions * 20 * 20)
 
         self.apply(xavier_weights_init)
         self.reset_hidden()
