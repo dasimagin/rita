@@ -1,4 +1,4 @@
-export PYTHON_BIN_PATH="/usr/bin/python3"
+export PYTHON_BIN_PATH=$(which python3)
 git clone https://github.com/deepmind/lab.git && cd lab
 echo "
 # Description:
@@ -43,4 +43,4 @@ cd ../..
 
 bazel build --python_path=/usr/bin/python3 -c opt python/pip_package:build_pip_package
 ./bazel-bin/python/pip_package/build_pip_package /tmp/dmlab_pkg
-pip install /tmp/dmlab_pkg/DeepMind_Lab-1.0-py3-none-any.whl --force-reinstall
+pip3 install /tmp/dmlab_pkg/DeepMind_Lab-1.0-py3-none-any.whl --force-reinstall
