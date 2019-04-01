@@ -39,7 +39,8 @@ class ActorCriticRNN(torch.nn.Module):
         self.hx, self.cx = self.lstm(x, (self.hx, self.cx))
         value = self.critic_linear(self.hx)
         logits = self.actor_linear(self.hx)
-        return value, softmax(logits, dim=-1)
+        Q_aux = self.pixel_linear(self.hx).view(-1, 20, 20)
+        return value, softmax(logits, dim=-1), Q_aux
 
     def reset_hidden(self):
         self.cx = torch.zeros(1, 256)
