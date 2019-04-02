@@ -35,7 +35,7 @@ class ActorCriticRNN(torch.nn.Module):
     def forward(self, inputs):
         x = self.cnn_features(inputs)
         x = x.view(-1, self.cnn_output_size)
-
+        #add test comment
         self.hx, self.cx = self.lstm(x, (self.hx, self.cx))
         value = self.critic_linear(self.hx)
         logits = self.actor_linear(self.hx)
