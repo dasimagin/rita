@@ -52,7 +52,7 @@ class Dmlab_env(gym.Env):
         level_config = {
             'fps': str(args.fps),
             'width': str(args.frame_w),
-            'height': str(args.frame_h)
+            'height': str(args.frame_h),
         }
         self.env = deepmind_lab.Lab(
             args.env_name,

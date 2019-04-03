@@ -1,4 +1,5 @@
 import argparse
+import torch
 import torch.multiprocessing as mp
 
 from config import Config
@@ -26,12 +27,12 @@ if __name__ == '__main__':
 
     shared_model = ActorCritic(env.observation_space.shape, env.action_space.n)
     if config.train.pretrained_weights is not None:
-        shared_model.load_weights(config.train.pretrained_weights)
+        shared_model.load_state_dict(torch.load(config.train.pretrained_weights))
     shared_model.share_memory()
 
     optimizer = SharedAdam(shared_model.parameters(), lr=config.train.learning_rate)
     if config.train.pretrained_optimizer is not None:
-        optimizer.load_params(config.train.pretrained_optimizer)
+        optimizer.load_state_dict(torch.load(config.train.pretrained_optimizer))
     optimizer.share_memory()
 
     processes = []

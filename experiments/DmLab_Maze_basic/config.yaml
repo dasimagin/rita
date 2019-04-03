@@ -23,7 +23,7 @@ environment:
     stack_frames: 1
     frame_h: 84
     frame_w: 84
-    max_episode_steps: 1000000
+    max_episode_steps: 10000000
     normalize_env: true
     noop_max: null
     fps: 60
