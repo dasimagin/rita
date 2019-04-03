@@ -10,30 +10,28 @@ from workers import test_worker, train_worker
 from multiprocessing import Value
 
 parser = argparse.ArgumentParser(description='A3C')
-parser.add_argument('--config-path', required=True,
-                    help='path to config')
-parser.add_argument('--models-path', default="./saved_models",
-                    help='path to saved models (default: `./saved_models`)')
-parser.add_argument('--logs-path', default="./log.txt",
-                    help='path to logs (default: `./log.txt`)')
+parser.add_argument('--experiment-folder', required=True,
+                    help='path to folder with config (here weights and log will be stored)')
 parser.add_argument('--pretrained-weights', default=None,
-                    help='path to pretrained weights and optimizer params (default: if None – train from scratch)')
+                    help='path to pretrained weights (default: if None – train from scratch)')
+parser.add_argument('--pretrained-optimizer', default=None,
+                    help='path to pretrained optimizer params (default: if None – train from scratch)')
 
 if __name__ == '__main__':
     cmd_args = parser.parse_args()
-    config = Config.fromYamlFile(cmd_args.config_path)
+    config = Config.fromYamlFile('{}/{}'.format(cmd_args.experiment_folder, 'config.yaml'))
     config.train.__dict__.update(vars(cmd_args))
 
     env = make_env(config)
 
     shared_model = ActorCritic(env.observation_space.shape, env.action_space.n)
     if config.train.pretrained_weights is not None:
-        shared_model.load_weights(config.pretrained_weights)
+        shared_model.load_weights(config.train.pretrained_weights)
     shared_model.share_memory()
 
     optimizer = SharedAdam(shared_model.parameters(), lr=config.train.learning_rate)
-    if config.train.pretrained_weights is not None:
-        optimizer.load_params(config.train.pretrained_weights.replace('weights/', 'optimizer_params/'))
+    if config.train.pretrained_optimizer is not None:
+        optimizer.load_params(config.train.pretrained_optimizer)
     optimizer.share_memory()
 
     processes = []

@@ -14,7 +14,7 @@ train:
     entropy_weight: 0.01
 
     # backups
-    save_frequency: 60
+    save_frequency: 3
 
 environment:
     env_name: "SpaceInvaders-v0"

@@ -10,7 +10,7 @@ def make_atari(args):
     env = NoopResetEnv(env, noop_max=args.noop_max)
     if args.clip_rewards:
         env = ClipRewardEnv(env)
-    if 'NoFrameskip' in env.spec.id:
+    if 'NoFrameskip' in env.spec.id and args.skip_frames > 0:
         env = MaxAndSkipEnv(env, skip=args.skip_frames)
     env = ProcessFrame84(env, crop=False)
     if args.stack_frames > 1:
