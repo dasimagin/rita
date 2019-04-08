@@ -3,10 +3,11 @@ import logging
 import time
 import torch
 import torch.nn.functional as F
+import numpy as np
 
 
 def play_game(model, env):
-    args = model.config
+    args = model.config.train
     state = env.reset()
     model.reset_hidden()
     done = False

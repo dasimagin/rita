@@ -34,11 +34,9 @@ def make_dm_lab(args):
     return env
 
 def make_env(args):
-    if 'atari' in args.env_name:
-        args.env_name = args.env_name[6:]
+    if args.env_type == "atari":
         return make_atari(args)
-    elif 'dmlab' in args.env_name:
-        args.env_name = args.env_name[6:]
+    elif args.env_type == "dmlab":
         return make_dm_lab(args)
     else:
         raise NotImplemented
