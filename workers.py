@@ -89,7 +89,8 @@ def test_worker(args, shared_model, total_steps, optimizer):
     args.environment.clip_rewards = False
     env = make_env(args)
     
-    logging.basicConfig(filename=args.train.logs_path, level=logging.INFO)
+    log_path = '{}/{}'.format(args.train.experiment_path, 'log.txt')
+    logging.basicConfig(filename=log_path, level=logging.INFO)
     logging.info("STARTED TRAINING PROCESS {}".format(time.strftime("%Y.%m.%d_%H:%M", time.localtime())))
 
     model = ActorCritic(env.observation_space.shape, env.action_space.n)

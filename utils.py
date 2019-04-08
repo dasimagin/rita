@@ -39,18 +39,17 @@ def save_progress(args, model, optimizer, steps):
         time.strftime("%Y.%m.%d_%H:%M", time.localtime()),
         steps
     )
-    weights_path = "{}/weights/{}".format(args.train.models_path, model_name)
-    model.save_weights(weights_path)
-    log_message = "Wights were saved to {}".format(weights_path)
+    weights_path = "{}/weights/{}".format(args.train.experiment_path, model_name)
+    torch.save(model.state_dict(), weights_path)
+    log_message = "Weights were saved to {}".format(weights_path)
     print(log_message)
     logging.info(log_message)
 
-    if optimizer is not None:
-        optimizer_params_path = "{}/optimizer_params/{}".format(args.train.models_path, model_name)
-        optimizer.save_params(optimizer_params_path)
-        log_message = "Optimizer's params were saved to {}".format(optimizer_params_path)
-        print(log_message)
-        logging.info(log_message)
+    optimizer_params_path = "{}/optimizer_params/{}".format(args.train.experiment_path, model_name)
+    torch.save(optimizer.state_dict(), optimizer_params_path)
+    log_message = "Optimizer's params were saved to {}".format(optimizer_params_path)
+    print(log_message)
+    logging.info(log_message)
 
 
 def ensure_shared_grads(model, shared_model):
