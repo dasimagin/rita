@@ -1,6 +1,6 @@
 sudo apt-get update
 sudo apt-get -y upgrade
-sudo apt-get install -y cmake python3-pip
+sudo apt-get install -y cmake python3-pip gettext
 sudo apt-get install -y pkg-config zip g++ zlib1g-dev unzip python3 python
 sudo apt-get install -y python3-dev python3-numpy libffi-dev libsdl2-dev libosmesa6-dev
 

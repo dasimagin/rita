@@ -108,9 +108,9 @@ def test_worker(args, shared_model, total_steps, optimizer):
         reward_history.append(total_reward)
 
         log_message = (
-                'Time {}, num steps {}, FPS {:.0f}, ',
-                'curr episode reward {}, mean episode reward: {}, ',
-                'mean policy loss {:.2f}, mean value loss {:.2f}, ',
+                'Time {}, num steps {}, FPS {:.0f}, '+
+                'curr episode reward {}, mean episode reward: {}, '+
+                'mean policy loss {:.2f}, mean value loss {:.2f}, '+
                 'mean entropy percentage {:.2f}'
             ).format(
             time.strftime("%Hh %Mm %Ss", time.gmtime(time.time() - start_time)),

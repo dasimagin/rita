@@ -14,16 +14,17 @@ train:
     entropy_weight: 0.01
 
     # backups
-    save_frequency: 3
+    save_frequency: 5
 
 environment:
-    env_name: "atari-SpaceInvaders-v0"
-    skip_frames: 0
-    clip_rewards: true
+    env_type: "dmlab"
+    env_name: "seekavoid_arena_01"
+    skip_frames: 4
+    clip_rewards: false
     stack_frames: 1
     frame_h: 84
     frame_w: 84
-    max_episode_steps: 4000
     normalize_env: true
-    noop_max: 30
-    fps: null
+    noop_max: null
+    fps: 60
+    episode_timelimit: 3

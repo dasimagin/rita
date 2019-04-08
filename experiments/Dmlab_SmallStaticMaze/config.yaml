@@ -17,7 +17,8 @@ train:
     save_frequency: 5
 
 environment:
-    env_name: "dmlab-seekavoid_arena_01"
+    env_type: "dmlab"
+    env_name: "nav_maze_static_01"
     skip_frames: 4
     clip_rewards: false
     stack_frames: 1
@@ -26,4 +27,4 @@ environment:
     normalize_env: true
     noop_max: null
     fps: 60
-    episode_timelimit: 300
+    episode_timelimit: 3
