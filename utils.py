@@ -39,13 +39,13 @@ def save_progress(args, model, optimizer, steps):
         time.strftime("%Y.%m.%d_%H:%M", time.localtime()),
         steps
     )
-    weights_path = "{}/weights/{}".format(args.train.experiment_folder, model_name)
+    weights_path = "{}/weights/{}".format(args.train.experiment_path, model_name)
     torch.save(model.state_dict(), weights_path)
     log_message = "Weights were saved to {}".format(weights_path)
     print(log_message)
     logging.info(log_message)
 
-    optimizer_params_path = "{}/optimizer_params/{}".format(args.train.experiment_folder, model_name)
+    optimizer_params_path = "{}/optimizer_params/{}".format(args.train.experiment_path, model_name)
     torch.save(optimizer.state_dict(), optimizer_params_path)
     log_message = "Optimizer's params were saved to {}".format(optimizer_params_path)
     print(log_message)

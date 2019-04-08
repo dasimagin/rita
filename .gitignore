@@ -2,7 +2,3 @@
 *.idea
 *__pycache__*
 *.DS_Store
-*videos/*
-*weights*
-*optimizer_params*
-

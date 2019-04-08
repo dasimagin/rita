@@ -89,7 +89,7 @@ def test_worker(args, shared_model, total_steps, optimizer):
     args.environment.clip_rewards = False
     env = make_env(args)
     
-    log_path = '{}/{}'.format(args.train.experiment_folder, 'log.txt')
+    log_path = '{}/{}'.format(args.train.experiment_path, 'log.txt')
     logging.basicConfig(filename=log_path, level=logging.INFO)
     logging.info("STARTED TRAINING PROCESS {}".format(time.strftime("%Y.%m.%d_%H:%M", time.localtime())))
 
