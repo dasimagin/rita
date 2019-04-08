@@ -10,7 +10,7 @@ from utils import ensure_shared_grads, play_game, save_progress
 
 
 def train_worker(args, shared_model, total_steps, optimizer, lock):
-    env = make_env(args)
+    env = make_env(args.environment)
     args = args.train
 
     model = ActorCritic(env.observation_space.shape, env.action_space.n)
@@ -87,13 +87,14 @@ def train_worker(args, shared_model, total_steps, optimizer, lock):
 
 def test_worker(args, shared_model, total_steps, optimizer):
     args.environment.clip_rewards = False
-    env = make_env(args)
-    
-    log_path = '{}/{}'.format(args.train.experiment_path, 'log.txt')
+    env = make_env(args.environment)
+
+    log_path = '{}/{}'.format(args.train.experiment_folder, 'log.txt')
     logging.basicConfig(filename=log_path, level=logging.INFO)
     logging.info("STARTED TRAINING PROCESS {}".format(time.strftime("%Y.%m.%d_%H:%M", time.localtime())))
 
     model = ActorCritic(env.observation_space.shape, env.action_space.n)
+    model.config = args
     model.eval()
 
     start_time = time.time()
@@ -103,15 +104,23 @@ def test_worker(args, shared_model, total_steps, optimizer):
         model.load_state_dict(shared_model.state_dict())
         if (len(reward_history) + 1) % args.train.save_frequency == 0:
             save_progress(args, model, optimizer, total_steps.value)
-        total_reward, _ = play_game(model, env)
+        total_reward, _, policy_loss, value_loss, entropy = play_game(model, env)
         reward_history.append(total_reward)
 
-        log_message = "Time {}, num steps {}, FPS {:.0f}, curr episode reward {}, mean episode reward: {}".format(
+        log_message = (
+                'Time {}, num steps {}, FPS {:.0f}, ',
+                'curr episode reward {}, mean episode reward: {}, ',
+                'mean policy loss {:.2f}, mean value loss {:.2f}, ',
+                'mean entropy percentage {:.2f}'
+            ).format(
             time.strftime("%Hh %Mm %Ss", time.gmtime(time.time() - start_time)),
             total_steps.value,
             total_steps.value / (time.time() - start_time),
             total_reward,
             np.mean(reward_history[-60:]),
+            policy_loss,
+            value_loss,
+            entropy
         )
         print(log_message)
         logging.info(log_message)
