@@ -4,6 +4,7 @@ import time
 import torch
 import torch.nn.functional as F
 import numpy as np
+import os
 
 
 def play_game(model, env):
@@ -88,6 +89,10 @@ def save_progress(args, model, optimizer, steps):
         time.strftime("%Y.%m.%d_%H:%M", time.localtime()),
         steps
     )
+    if not os.path.exists("{}/weights/".format(args.train.experiment_folder)):
+        os.makedirs("{}/weights/".format(args.train.experiment_folder))
+    if not os.path.exists("{}/optimizer_params/".format(args.train.experiment_folder)):
+        os.makedirs("{}/optimizer_params/".format(args.train.experiment_folder))
     weights_path = "{}/weights/{}".format(args.train.experiment_folder, model_name)
     torch.save(model.state_dict(), weights_path)
     log_message = "Weights were saved to {}".format(weights_path)
