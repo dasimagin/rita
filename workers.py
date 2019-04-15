@@ -21,7 +21,7 @@ def train_worker(args, shared_model, total_steps, optimizer, lock):
     curiosity_rewarder = CuriosityRewarder(env.observation_space.shape, env.action_space.n)
     curiosity_rewarder.train()
     
-    curiosity_optimizer = optim.Adam(curiosity_rewarder.parameters(), lr=0.0001)
+    curiosity_optimizer = optim.Adam(curiosity_rewarder.parameters())
 
     state = env.reset()
     state = torch.FloatTensor(state)
@@ -77,6 +77,7 @@ def train_worker(args, shared_model, total_steps, optimizer, lock):
         value_loss = 0
         gae = torch.zeros(1, 1)
         for i in reversed(range(len(rewards))):
+            # print(rewards[i], args.curiosity_weight * curiosity_rewards[i].detach())
             R = args.gamma * R + rewards[i] + args.curiosity_weight * curiosity_rewards[i].detach()
             advantage = R - values[i]
             value_loss = value_loss + 0.5 * advantage.pow(2)
@@ -85,10 +86,11 @@ def train_worker(args, shared_model, total_steps, optimizer, lock):
             delta_t = rewards[i] + args.gamma * values[i + 1] - values[i]
             gae = gae * args.gamma * args.tau + delta_t
 
+            # print('lp:', log_probs[i], 'gae:', gae.detach(), 'ent:', entropies[i])
             policy_loss = policy_loss - log_probs[i] * gae.detach() - args.entropy_weight * entropies[i]
 
         curiosity_optimizer.zero_grad()
-        curiosity_loss = sum(curiosity_rewards) / len(curiosity_rewards)
+        curiosity_loss = sum(map(lambda x: x**2, curiosity_rewards)) / len(curiosity_rewards)
         curiosity_loss.backward()
         curiosity_optimizer.step()
         

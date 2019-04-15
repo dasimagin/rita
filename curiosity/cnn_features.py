@@ -5,31 +5,27 @@ class SimpleConvNet(nn.Module):
     def __init__(self, observation_shape):
         super(SimpleConvNet, self).__init__()
         self.cnn_features = nn.Sequential(
-            nn.Conv2d(observation_shape[0], 8, 3, stride=2, padding=1),
-            nn.ELU(),
-            nn.Conv2d(8, 16, 3, stride=2, padding=1),
-            nn.ELU(),
-            nn.Conv2d(16, 16, 3, stride=2, padding=1),
-            nn.ELU(),
-            nn.Conv2d(16, 16, 3, stride=2, padding=1),
-            nn.ELU()
+            nn.Conv2d(observation_shape[0], 8, 3),
+            nn.ReLU(),
+            nn.Conv2d(8, 8, 3),
+            nn.ReLU(),
+            nn.MaxPool2d(2, 2),
+            nn.Conv2d(8, 16, 3),
+            nn.ReLU(),
+            nn.Conv2d(16, 16, 3),
+            nn.ReLU(),
+            nn.MaxPool2d(2, 2),
+            nn.Conv2d(16, 32, 3),
+            nn.ReLU(),
+            nn.Conv2d(32, 32, 3),
+            nn.ReLU(),
+            nn.MaxPool2d(2, 2),
+            nn.Conv2d(32, 64, 3),
+            nn.ReLU(),
+            nn.Conv2d(64, 64, 3),
+            nn.ReLU(),
+            nn.MaxPool2d(2, 2),
         )
-        '''self.cnn_features = nn.Sequential(
-            nn.Conv2d(observation_shape[0], 16, 3, padding=1),
-            nn.ReLU(),
-            nn.Conv2d(16, 16, 3, padding=1),
-            nn.ReLU(),
-            nn.MaxPool2d(2, 2),
-            nn.Conv2d(16, 16, 3, padding=1),
-            nn.ReLU(),
-            nn.Conv2d(16, 16, 3, padding=1),
-            nn.ReLU(),
-            nn.MaxPool2d(2, 2),
-            nn.Conv2d(16, 16, 3, padding=1),
-            nn.ReLU(),
-            nn.Conv2d(16, 16, 3, padding=1),
-            nn.MaxPool2d(2, 2)
-        )'''
         self.cnn_output_size = self._cnn_features_size(observation_shape)
         
     def forward(self, x):
