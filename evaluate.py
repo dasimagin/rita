@@ -20,6 +20,7 @@ if __name__ == '__main__':
     log_path = '{}/{}'.format(cmd_args.experiment_folder, 'log.txt')
     logging.basicConfig(filename=log_path, level=logging.INFO)
 
+    config.environment.clip_rewards = False
     env = make_env(config.environment)
     model = ActorCritic(env.observation_space.shape, env.action_space.n)
     model.config = config
