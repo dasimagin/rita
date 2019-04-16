@@ -1,0 +1,33 @@
+train:
+    # optimizer
+    learning_rate: 0.0001
+    max_grad_norm: 50
+
+    # a3c
+    agents_n: 16
+    update_agent_frequency: 100
+
+    # loss
+    gamma: 0.99 # train discount coef
+    tau: 1.00 # GAE parameter
+    value_weight: 0.5
+    entropy_weight: 0.001
+
+    # intrinsic rewards
+    curiosity_weight: 0.001
+
+    # backups
+    save_frequency: 3
+
+environment:
+    env_type: "dmlab"
+    env_name: "lt_horseshoe_color"
+    skip_frames: 4
+    clip_rewards: false
+    stack_frames: 1
+    frame_h: 84
+    frame_w: 84
+    normalize_env: true
+    noop_max: null
+    fps: 60
+    episode_timelimit: 100
