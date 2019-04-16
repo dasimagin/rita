@@ -14,20 +14,24 @@ ACTIONS = [
     ],
     [
         _action(0, 0, 0, 0, 0, 0, 0),
-        _action(0, 0, -1, 0, 0, 0, 0),
-        _action(0, 0, 1, 0, 0, 0, 0)
+        _action(0, -5, 0, 0, 0, 0, 0),
+        _action(0, 5, 0, 0, 0, 0, 0)
     ],
     [
         _action(0, 0, 0, 0, 0, 0, 0),
         _action(0, 0, 0, -1, 0, 0, 0),
         _action(0, 0, 0, 1, 0, 0, 0)
+    ],
+    [
+        _action(0, 0, 0, 0, 0, 0, 0),
+        _action(0, 0, 0, 0, 1, 0, 0)
     ]
 ]
 
 class MultiDiscrete:
     def __init__(self):
         self.nvec = np.asarray(
-            [3, 3, 3],
+            [3, 3, 3, 2],
             dtype=np.int64
         )
         self.n = self.nvec.prod()
