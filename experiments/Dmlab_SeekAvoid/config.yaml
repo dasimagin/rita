@@ -30,4 +30,3 @@ environment:
     normalize_env: true
     noop_max: null
     fps: 60
-    episode_timelimit: 3
