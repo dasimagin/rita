@@ -54,8 +54,7 @@ class Dmlab_env(gym.Env):
         level_config = {
             'fps': str(args.fps),
             'width': str(args.frame_w),
-            'height': str(args.frame_h),
-            'appendCommand': '/seta timelimit %d' %args.episode_timelimit,
+            'height': str(args.frame_h)
         }
         self.env = deepmind_lab.Lab(
             args.env_name,
