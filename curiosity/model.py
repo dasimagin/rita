@@ -39,6 +39,6 @@ class CuriosityRewarder(nn.Module):
         self.mean = 0.99 * self.mean + 0.01 * loss.detach()
         self.mean_sq = 0.99 * self.mean_sq + 0.01 * (loss.detach()**2)
         var = self.mean_sq - self.mean**2
-        return (loss - self.mean) / (var**0.5)
+        return (loss - self.mean) / (var**0.5 + 1e-6)
         
         

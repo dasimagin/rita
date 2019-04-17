@@ -5,13 +5,13 @@ train:
 
     # a3c
     agents_n: 16
-    update_agent_frequency: 20
+    update_agent_frequency: 60
 
     # loss
     gamma: 0.99 # train discount coef
     tau: 1.00 # GAE parameter
     value_weight: 0.5
-    entropy_weight: 0.04
+    entropy_weight: 0.001
 
     # intrinsic rewards
     curiosity_weight: 0.001
