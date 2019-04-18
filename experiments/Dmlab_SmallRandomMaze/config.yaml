@@ -6,7 +6,7 @@ train:
     # a3c
     agents_n: 16
     update_agent_frequency: 60
-    sample_lr_and_entropy: false
+    sample_entropy: false
 
     # loss
     gamma: 0.99 # train discount coef
@@ -23,12 +23,12 @@ train:
 environment:
     env_type: "dmlab"
     env_name: "nav_maze_random_goal_01"
-    skip_frames: 4
+    skip_frames: 0
     clip_rewards: false
     stack_frames: 1
     frame_h: 84
     frame_w: 84
     normalize_env: true
     noop_max: null
-    fps: 60
+    fps: 15
     episode_length_sec: 60
