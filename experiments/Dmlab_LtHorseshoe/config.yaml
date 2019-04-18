@@ -5,8 +5,8 @@ train:
 
     # a3c
     agents_n: 32
-    update_agent_frequency: 20
-    sample_lr_and_entropy: true
+    update_agent_frequency: 60
+    sample_entropy: true
 
     # loss
     gamma: 0.99 # train discount coef
@@ -30,5 +30,5 @@ environment:
     frame_w: 84
     normalize_env: true
     noop_max: null
-    fps: 20
+    fps: 15
     episode_length_sec: 600

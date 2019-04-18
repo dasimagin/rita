@@ -6,43 +6,45 @@ import gym
 def _action(*entries):
       return np.array(entries, dtype=np.intc)
 
-class UsefulActions:
+ACTIONS = [
+    [
+        _action(0, 0, 0, 0, 0, 0, 0),
+        _action(-30, 0, 0, 0, 0, 0, 0),
+        _action(30, 0, 0, 0, 0, 0, 0)
+    ],
+    [
+        _action(0, 0, 0, 0, 0, 0, 0),
+        _action(0, 0, -1, 0, 0, 0, 0),
+        _action(0, 0, 1, 0, 0, 0, 0)
+    ],
+    [
+        _action(0, 0, 0, 0, 0, 0, 0),
+        _action(0, 0, 0, -1, 0, 0, 0),
+        _action(0, 0, 0, 1, 0, 0, 0)
+    ],
+    [
+        _action(0, 0, 0, 0, 0, 0, 0),
+        _action(0, 0, 0, 0, 1, 0, 0)
+    ]
+]
+
+class MultiDiscrete:
     def __init__(self):
-        self.n = 27
-        self.actions = [
-            _action(0, 0, 0, 0, 0, 0, 0),
-            _action(0, 0, 0, 1, 0, 0, 0),
-            _action(0, 0, -1, 0, 0, 0, 0),
-            _action(0, 0, 0, -1, 0, 0, 0),
-            _action(0, 0, 1, 0, 0, 0, 0),
-            _action(-20, 0, 0, 0, 0, 0, 0),
-            _action(20, 0, 0, 0, 0, 0, 0),
-            _action(-20, 0, 0, 1, 0, 0, 0),
-            _action(20, 0, 0, 1, 0, 0, 0),
-            _action(0, 0, -1, -1, 0, 0, 0),
-            _action(0, 0, 1, -1, 0, 0, 0),
-            _action(0, 0, 0, 1, 0, 1, 0),
-            _action(0, 0, -1, 0, 0, 1, 0),
-            _action(0, 0, 1, 0, 0, 1, 0),
-            _action(0, 0, 0, 1, 1, 0, 0),
-            _action(0, 0, -1, 0, 1, 0, 0),
-            _action(0, 0, 0, -1, 1, 0, 0),
-            _action(0, 0, 1, 0, 1, 0, 0),
-            _action(-20, 0, 0, 0, 1, 0, 0),
-            _action(20, 0, 0, 0, 1, 0, 0),
-            _action(-20, 0, 0, 1, 1, 0, 0),
-            _action(20, 0, 0, 1, 1, 0, 0),
-            _action(0, 0, -1, -1, 1, 0, 0),
-            _action(0, 0, 1, -1, 1, 0, 0),
-            _action(0, 0, 0, 1, 1, 1, 0),
-            _action(0, 0, -1, 0, 1, 1, 0),
-            _action(0, 0, 1, 0, 1, 1, 0)
-        ]
+        self.nvec = np.asarray(
+            [len(ACTIONS[i]) for i in range(len(ACTIONS))],
+            dtype=np.int64
+        )
+        self.n = self.nvec.prod()
 
     def __getitem__(self, ind):
         if type(ind) == np.ndarray:
             ind = ind[0][0]
-        return self.actions[ind]
+        res = _action(0, 0, 0, 0, 0, 0, 0)
+        prod = 1
+        for i, ax in enumerate(self.nvec):
+            res += ACTIONS[i][int(ind/prod)%ax]
+            prod *= ax
+        return res
 
 class Dmlab_env(gym.Env):
     metadata = {
@@ -70,7 +72,7 @@ class Dmlab_env(gym.Env):
         )
         args.id = args.env_name
         self.spec = args
-        self.action_space = UsefulActions()
+        self.action_space = MultiDiscrete()
         self.reward_range = (-float('inf'), float('inf'))
         self.seed_n = None
         self.np_random = np.random.RandomState()
