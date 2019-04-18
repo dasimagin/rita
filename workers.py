@@ -30,10 +30,11 @@ def train_worker(args, shared_model, total_steps, optimizer, lock):
         model.load_state_dict(shared_model.state_dict())
         model.detach_hidden()
 
+        states = [state]
+        actions = []
         values = []
         log_probs = []
         rewards = []
-        curiosity_rewards = []
         entropies = []
 
         for step in range(args.update_agent_frequency):
@@ -46,27 +47,29 @@ def train_worker(args, shared_model, total_steps, optimizer, lock):
             action = prob.multinomial(num_samples=1).detach()
             log_prob = log_prob.gather(1, action)
 
-            next_state, reward, done, _ = env.step(action.numpy())
+            state, reward, done, _ = env.step(action.numpy())
 
             with total_steps.get_lock():
                 total_steps.value += 1
 
             if done:
-                next_state = env.reset()
+                state = env.reset()
                 model.reset_hidden()
-                
-            next_state = torch.FloatTensor(next_state)
-            curiosity_reward = curiosity_rewarder.get_reward(state.unsqueeze(0), action, next_state.unsqueeze(0))
-            state = next_state
             
+            state = torch.FloatTensor(state)
+
+            states.append(state)
+            actions.append(action[0, 0])
             values.append(value)
             log_probs.append(log_prob)
             rewards.append(reward)
-            curiosity_rewards.append(curiosity_reward)
-            
+
             if done:
                 break
 
+        curiosity_rewards = curiosity_rewarder.get_reward(
+            torch.stack(states[:-1]), torch.stack(actions), torch.stack(states[1:])
+        )
         R = torch.zeros(1, 1)
         if not done:
             value, _ = model(state.unsqueeze(0))
@@ -77,7 +80,6 @@ def train_worker(args, shared_model, total_steps, optimizer, lock):
         value_loss = 0
         gae = torch.zeros(1, 1)
         for i in reversed(range(len(rewards))):
-            # print(rewards[i], args.curiosity_weight * curiosity_rewards[i].detach())
             R = args.gamma * R + rewards[i] + args.curiosity_weight * curiosity_rewards[i].detach()
             advantage = R - values[i]
             value_loss = value_loss + 0.5 * advantage.pow(2)
@@ -86,11 +88,10 @@ def train_worker(args, shared_model, total_steps, optimizer, lock):
             delta_t = rewards[i] + args.gamma * values[i + 1] - values[i]
             gae = gae * args.gamma * args.tau + delta_t
 
-            # print('lp:', log_probs[i], 'gae:', gae.detach(), 'ent:', entropies[i])
             policy_loss = policy_loss - log_probs[i] * gae.detach() - args.entropy_weight * entropies[i]
 
         curiosity_optimizer.zero_grad()
-        curiosity_loss = sum(map(lambda x: x**2, curiosity_rewards)) / len(curiosity_rewards)
+        curiosity_loss = torch.mean(curiosity_rewards**2)
         curiosity_loss.backward()
         curiosity_optimizer.step()
         

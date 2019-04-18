@@ -22,8 +22,8 @@ train:
 environment:
     env_type: "dmlab"
     env_name: "nav_maze_random_goal_01"
-    skip_frames: 4
-    clip_rewards: false
+    skip_frames: 0
+    clip_rewards: true
     stack_frames: 1
     frame_h: 84
     frame_w: 84

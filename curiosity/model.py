@@ -29,15 +29,15 @@ class CuriosityRewarder(nn.Module):
         return x
         
     def get_reward(self, state, action, next_state):
-        action_oh = torch.zeros(self.n_actions)
-        action_oh[action] = 1
-        action_oh = action_oh.unsqueeze(0)
+        action_oh = torch.zeros((state.shape[0], self.n_actions))
+        action_oh[range(state.shape[0]), action] = 1
         predicted_next_state = self.forward(state, action_oh)
         with torch.no_grad():
             real_next_state = self.conv_features(next_state)
-        loss = torch.sum((predicted_next_state - real_next_state.detach())**2)
-        self.mean = 0.99 * self.mean + 0.01 * loss.detach()
-        self.mean_sq = 0.99 * self.mean_sq + 0.01 * (loss.detach()**2)
+        loss = torch.sum((predicted_next_state - real_next_state.detach())**2, dim=1)
+        alpha = min(0.5, 0.01 * state.shape[0])
+        self.mean = (1 - alpha) * self.mean + alpha * loss.detach().numpy().mean()
+        self.mean_sq = (1 - alpha) * self.mean_sq + alpha * (loss.detach().numpy()**2).mean()
         var = self.mean_sq - self.mean**2
         return (loss - self.mean) / (var**0.5)
         
