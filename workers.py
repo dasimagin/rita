@@ -14,13 +14,16 @@ from utils import ensure_shared_grads, play_game, save_progress
 def train_worker(args, shared_model, total_steps, optimizer, lock):
     env = make_env(args.environment)
     args = args.train
+    if args.sample_lr_and_entropy:
+        args.learning_rate = np.exp(np.random.uniform(0.0001, 0.005))
+        args.entropy_weight = np.exp(np.random.uniform(0.0005, 0.01))
 
     model = ActorCritic(env.observation_space.shape, env.action_space.n)
     model.train()
-    
+
     curiosity_rewarder = CuriosityRewarder(env.observation_space.shape, env.action_space.n)
     curiosity_rewarder.train()
-    
+
     curiosity_optimizer = optim.Adam(curiosity_rewarder.parameters())
 
     state = env.reset()
@@ -54,16 +57,16 @@ def train_worker(args, shared_model, total_steps, optimizer, lock):
             if done:
                 next_state = env.reset()
                 model.reset_hidden()
-                
+
             next_state = torch.FloatTensor(next_state)
             curiosity_reward = curiosity_rewarder.get_reward(state.unsqueeze(0), action, next_state.unsqueeze(0))
             state = next_state
-            
+
             values.append(value)
             log_probs.append(log_prob)
             rewards.append(reward)
             curiosity_rewards.append(curiosity_reward)
-            
+
             if done:
                 break
 
@@ -93,7 +96,7 @@ def train_worker(args, shared_model, total_steps, optimizer, lock):
         curiosity_loss = sum(map(lambda x: x**2, curiosity_rewards)) / len(curiosity_rewards)
         curiosity_loss.backward()
         curiosity_optimizer.step()
-        
+
         optimizer.zero_grad()
         (policy_loss + args.value_weight * value_loss).backward()
         torch.nn.utils.clip_grad_norm_(model.parameters(), args.max_grad_norm)

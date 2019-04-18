@@ -4,8 +4,9 @@ train:
     max_grad_norm: 50
 
     # a3c
-    agents_n: 16
-    update_agent_frequency: 100
+    agents_n: 32
+    update_agent_frequency: 20
+    sample_lr_and_entropy: true
 
     # loss
     gamma: 0.99 # train discount coef
@@ -22,11 +23,11 @@ train:
 environment:
     env_type: "dmlab"
     env_name: "lt_horseshoe_color"
-    skip_frames: 4
+    skip_frames: 0
     clip_rewards: false
     stack_frames: 1
     frame_h: 84
     frame_w: 84
     normalize_env: true
     noop_max: null
-    fps: 60
+    fps: 20
