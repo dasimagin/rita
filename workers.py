@@ -15,7 +15,7 @@ def train_worker(args, shared_model, total_steps, optimizer, lock):
     env = make_env(args.environment)
     args = args.train
     if args.sample_lr_and_entropy:
-        args.learning_rate = np.exp(np.random.uniform(0.0001, 0.005))
+        args.learning_rate = np.exp(np.random.uniform(0.00005, 0.001))
         args.entropy_weight = np.exp(np.random.uniform(0.0005, 0.01))
 
     model = ActorCritic(env.observation_space.shape, env.action_space.n)
