@@ -67,18 +67,17 @@ def play_game(model, env):
     return total_reward, ep_len, policy_loss, value_loss, entropy
 
 
-def record_video(model, env, games_count=2):
+def record_video(model, env):
     env_monitor = gym.wrappers.Monitor(env, directory='videos', force=True)
     results = []
-    for _ in range(games_count):
-        reward, length, policy_loss, value_loss, entropy = play_game(model, env_monitor)
-        results.append({
-            'reward': reward,
-            'len': length,
-            'mean policy loss': policy_loss,
-            'mean value loss': value_loss,
-            'mean entropy percentage': entropy
-        })
+    reward, length, policy_loss, value_loss, entropy = play_game(model, env_monitor)
+    results.append({
+        'reward': reward,
+        'len': length,
+        'mean policy loss': policy_loss,
+        'mean value loss': value_loss,
+        'mean entropy percentage': entropy
+    })
     env_monitor.close()
     return results
 

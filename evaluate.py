@@ -21,7 +21,13 @@ if __name__ == '__main__':
     logging.basicConfig(filename=log_path, level=logging.INFO)
 
     config.environment.clip_rewards = False
-    env = make_env(config.environment)
+    if config.environment.env_type == 'dmlab':
+        config.environment.episode_length_sec = min(config.environment.episode_length_sec, 60)
+        config.environment.prev_frame_h = config.environment.frame_h
+        config.environment.prev_frame_w = config.environment.frame_w
+        config.environment.frame_h = max(config.environment.frame_h, 256)
+        config.environment.frame_w = max(config.environment.frame_w, 256)
+    env = make_env(config.environment, recording=True)
     model = ActorCritic(env.observation_space.shape, env.action_space.n)
     model.config = config
     if cmd_args.pretrained_weights is not None:
