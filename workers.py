@@ -16,7 +16,7 @@ def train_worker(args, shared_model, total_steps, optimizer, lock):
     args = args.train
     if args.sample_entropy:
         args.entropy_weight = np.exp(
-            np.random.uniform(np.log(0.0005), np.log(0.01)))
+            np.random.uniform(np.log(0.0001), np.log(0.005)))
 
     model = ActorCritic(env.observation_space.shape, env.action_space.n)
     model.train()

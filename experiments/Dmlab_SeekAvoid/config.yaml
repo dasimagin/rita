@@ -23,12 +23,14 @@ train:
 environment:
     env_type: "dmlab"
     env_name: "seekavoid_arena_01"
-    skip_frames: 4
+    skip_frames: 0
     clip_rewards: false
     stack_frames: 1
     frame_h: 84
     frame_w: 84
     normalize_env: true
     noop_max: null
-    fps: 60
+    fps: 15
     episode_length_sec: 60
+    bot_count: 0 # [0, 6]
+    bot_skill: 1 # [1, 5]
