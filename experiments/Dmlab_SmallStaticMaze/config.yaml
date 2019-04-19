@@ -32,5 +32,5 @@ environment:
     noop_max: null
     fps: 15
     episode_length_sec: 60
-    bot_count: 0 # [0, 6]
-    bot_skill: 1 # [1, 5]
+    bot_count: null
+    bot_skill: null

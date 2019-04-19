@@ -69,17 +69,16 @@ def play_game(model, env):
 
 def record_video(model, env):
     env_monitor = gym.wrappers.Monitor(env, directory='videos', force=True)
-    results = []
     reward, length, policy_loss, value_loss, entropy = play_game(model, env_monitor)
-    results.append({
+    env_monitor.close()
+    result = {
         'reward': reward,
         'len': length,
         'mean policy loss': policy_loss,
         'mean value loss': value_loss,
         'mean entropy percentage': entropy
-    })
-    env_monitor.close()
-    return results
+    }
+    return result
 
 
 def save_progress(args, model, optimizer, steps):
