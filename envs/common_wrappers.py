@@ -254,3 +254,15 @@ class NormalizedEnv(gym.ObservationWrapper):
 
         return (observation - unbiased_mean) / (unbiased_std + 1e-8)
 
+class RescaleImageEnv(gym.ObservationWrapper):
+    def __init__(self, env, size):
+        super(RescaleImageEnv, self).__init__(env)
+        self.observation_space = gym.spaces.Box(low=0, high=255, shape=(size[0], size[1], 3), dtype=np.uint8)
+        self.size = size
+        
+    def observation(self, obs):
+        return RescaleImageEnv.process(obs, size=self.size)
+
+    @staticmethod
+    def process(frame, size):
+        return np.array(Image.fromarray(frame).resize(size, resample=Image.BILINEAR), dtype=np.uint8)
