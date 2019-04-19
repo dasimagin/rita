@@ -58,9 +58,12 @@ class Dmlab_env(gym.Env):
             'width': str(args.frame_w),
             'height': str(args.frame_h),
             'episodeLengthSeconds': str(args.episode_length_sec),
-            'botCount': str(args.bot_count),
-            'skill': str(args.bot_skill)
+            'color': str(False),
         }
+        if args.bot_count is not None:
+            level_config['botCount'] = str(args.bot_count)
+        if args.bot_skill is not None:
+            level_config['skill'] = str(args.bot_skill)
         self.env = deepmind_lab.Lab(
             args.env_name,
             ['RGB_INTERLEAVED'],
@@ -87,7 +90,7 @@ class Dmlab_env(gym.Env):
         if not done:
             obs = self.env.observations()['RGB_INTERLEAVED']
         else:
-            obs = np.zeros(self.observation_space.shape)
+            obs = np.zeros(self.observation_space.shape, dtype=np.uint8)
         return obs, reward, done, {}
 
     def reset(self):

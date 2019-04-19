@@ -130,7 +130,7 @@ def test_worker(args, shared_model, total_steps, optimizer):
 
         log_message = (
                 'Time {}, num steps {}, FPS {:.0f}, '+
-                'curr episode reward {}, mean episode reward: {}, '+
+                'curr episode reward {:.2f}, mean episode reward: {:.2f}, '+
                 'mean policy loss {:.2f}, mean value loss {:.2f}, '+
                 'mean entropy percentage {:.2f}'
             ).format(
