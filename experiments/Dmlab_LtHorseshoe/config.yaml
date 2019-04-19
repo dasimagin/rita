@@ -5,8 +5,8 @@ train:
 
     # a3c
     agents_n: 32
-    update_agent_frequency: 60
-    sample_entropy: true
+    update_agent_frequency: 40
+    sample_entropy: false
 
     # loss
     gamma: 0.99 # train discount coef
@@ -15,7 +15,7 @@ train:
     entropy_weight: 0.001
 
     # intrinsic rewards
-    curiosity_weight: 0.001
+    curiosity_weight: 0.01
 
     # backups
     save_frequency: 3
@@ -24,7 +24,7 @@ environment:
     env_type: "dmlab"
     env_name: "lt_horseshoe_color"
     skip_frames: 0
-    clip_rewards: false
+    clip_rewards: true
     stack_frames: 1
     frame_h: 84
     frame_w: 84
@@ -32,3 +32,5 @@ environment:
     noop_max: null
     fps: 15
     episode_length_sec: 600
+    bot_count: 4 # [0, 6]
+    bot_skill: 1 # [1, 5]

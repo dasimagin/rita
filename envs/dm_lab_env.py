@@ -9,8 +9,8 @@ def _action(*entries):
 ACTIONS = [
     [
         _action(0, 0, 0, 0, 0, 0, 0),
-        _action(-30, 0, 0, 0, 0, 0, 0),
-        _action(30, 0, 0, 0, 0, 0, 0)
+        _action(-15, 0, 0, 0, 0, 0, 0),
+        _action(15, 0, 0, 0, 0, 0, 0)
     ],
     [
         _action(0, 0, 0, 0, 0, 0, 0),
@@ -57,7 +57,9 @@ class Dmlab_env(gym.Env):
             'fps': str(args.fps),
             'width': str(args.frame_w),
             'height': str(args.frame_h),
-            'episodeLengthSeconds': str(args.episode_length_sec)
+            'episodeLengthSeconds': str(args.episode_length_sec),
+            'botCount': str(args.bot_count),
+            'skill': str(args.bot_skill)
         }
         self.env = deepmind_lab.Lab(
             args.env_name,

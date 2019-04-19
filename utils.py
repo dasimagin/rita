@@ -30,7 +30,7 @@ def play_game(model, env):
         action = prob.multinomial(num_samples=1).detach()
         log_prob = log_prob.gather(1, action)
 
-        state, reward, done, _ = env.step(action[0, 0])
+        state, reward, done, _ = env.step(prob[0].max(0)[1].item())
 
         entropies.append(entropy.numpy()[0][0])
         values.append(value.numpy()[0][0])
