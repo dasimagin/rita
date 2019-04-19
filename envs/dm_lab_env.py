@@ -58,9 +58,9 @@ class Dmlab_env(gym.Env):
             'width': str(args.frame_w),
             'height': str(args.frame_h),
             'episodeLengthSeconds': str(args.episode_length_sec),
-            'color': str(False),
         }
         if args.bot_count is not None:
+            level_config['color'] = str(False)
             level_config['botCount'] = str(args.bot_count)
         if args.bot_skill is not None:
             level_config['skill'] = str(args.bot_skill)
