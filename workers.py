@@ -5,9 +5,8 @@ import torch
 import torch.nn.functional as F
 
 from envs.utils import make_env
-from utils import delta_images
 from models.actor_critic_rnn import ActorCriticRNN as ActorCritic
-from utils import ensure_shared_grads, play_game, save_progress
+from utils import ensure_shared_grads, play_game, save_progress, delta_image
 
 
 def train_worker(args, shared_model, total_steps, optimizer, lock):
