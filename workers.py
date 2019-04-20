@@ -37,14 +37,13 @@ def train_worker(args, shared_model, total_steps, optimizer, lock):
             entropy = -(log_prob * prob).sum(1, keepdim=True)
             entropies.append(entropy)
             print(state.shape)
-            Q_auxes.append(delta_image(state, prev_state))
 
             action = prob.multinomial(num_samples=1).detach()
             log_prob = log_prob.gather(1, action)
 
             prev_state = state.copy()
             state, reward, done, _ = env.step(action.numpy())
-            Q_inst.append(delta_images(state, prev_state, zoom=4))
+            Q_auxes.append(delta_image(state, prev_state, zoom=4))
 
             with total_steps.get_lock():
                 total_steps.value += 1
