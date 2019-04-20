@@ -71,4 +71,6 @@ def delta_image(state, prev_state, zoom=4):
     Q_inst = []
     for i in range(zoom):
         for j in range(zoom):
-            Q_inst.append(img_L())
+            Q_inst.append(img_L(state, prev_state))
+
+    return Q_inst
