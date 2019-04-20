@@ -28,7 +28,7 @@ def train_worker(args, shared_model, total_steps, optimizer, lock):
         log_probs = []
         rewards = []
         entropies = []
-        Q_inst = []
+        Q_auxes = []
 
         for step in range(args.update_agent_frequency):
             value, logit, Q_aux = model(state.unsqueeze(0))
@@ -37,7 +37,7 @@ def train_worker(args, shared_model, total_steps, optimizer, lock):
             entropy = -(log_prob * prob).sum(1, keepdim=True)
             entropies.append(entropy)
             print(state.shape)
-            Q_auxes.append()
+            Q_auxes.append(delta_image(state, prev_state))
 
             action = prob.multinomial(num_samples=1).detach()
             log_prob = log_prob.gather(1, action)
