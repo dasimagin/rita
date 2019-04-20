@@ -41,7 +41,7 @@ def train_worker(args, shared_model, total_steps, optimizer, lock):
             action = prob.multinomial(num_samples=1).detach()
             log_prob = log_prob.gather(1, action)
 
-            prev_state = state.copy()
+            prev_state = state.clone()
             state, reward, done, _ = env.step(action.numpy())
             Q_auxes.append(delta_image(state, prev_state, zoom=4))
 
