@@ -5,6 +5,7 @@ import torch
 import torch.nn.functional as F
 
 from envs.utils import make_env
+from utils import delta_images
 from models.actor_critic_rnn import ActorCriticRNN as ActorCritic
 from utils import ensure_shared_grads, play_game, save_progress
 
@@ -18,6 +19,7 @@ def train_worker(args, shared_model, total_steps, optimizer, lock):
 
     state = env.reset()
     state = torch.FloatTensor(state)
+    prev_state = None
 
     while True:
         model.load_state_dict(shared_model.state_dict())
@@ -27,18 +29,23 @@ def train_worker(args, shared_model, total_steps, optimizer, lock):
         log_probs = []
         rewards = []
         entropies = []
+        Q_inst = []
 
         for step in range(args.update_agent_frequency):
-            value, logit = model(state.unsqueeze(0))
+            value, logit, Q_aux = model(state.unsqueeze(0))
             prob = F.softmax(logit, dim=-1)
             log_prob = F.log_softmax(logit, dim=-1)
             entropy = -(log_prob * prob).sum(1, keepdim=True)
             entropies.append(entropy)
+            print(state.shape)
+            Q_auxes.append()
 
             action = prob.multinomial(num_samples=1).detach()
             log_prob = log_prob.gather(1, action)
 
+            prev_state = state.copy()
             state, reward, done, _ = env.step(action.numpy())
+            Q_inst.append(delta_images(state, prev_state, zoom=4))
 
             with total_steps.get_lock():
                 total_steps.value += 1

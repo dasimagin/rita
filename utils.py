@@ -59,3 +59,16 @@ def ensure_shared_grads(model, shared_model):
             shared_param._grad += param.grad
         else:
             shared_param._grad = param.grad
+
+def img_L(state, prev_state):
+    return abs(prev_state - state).sum()
+
+def delta_image(state, prev_state, zoom=4):
+    size = state.shape[0] ** 0.5 / zoom
+    cur = state.copy().view(-1, size, size)
+    prev = prev_state.copy().view(-1, size, size)
+
+    Q_inst = []
+    for i in range(zoom):
+        for j in range(zoom):
+            Q_inst.append(img_L())
