@@ -64,13 +64,11 @@ def img_L(state, prev_state):
     return abs(prev_state - state).sum()
 
 def delta_image(state, prev_state, zoom=4):
-    size = state.shape[0] ** 0.5 / zoom
-    cur = state.copy().view(-1, size, size)
-    prev = prev_state.copy().view(-1, size, size)
-
+    size = state.shape[1] / zoom
     Q_inst = []
     for i in range(zoom):
         for j in range(zoom):
-            Q_inst.append(img_L(state, prev_state))
+            Q_inst.append(img_L(state[-1, size * i : size * (i + 1), size * j: size * (j + 1)], 
+                                prev_state[-1, size * i : size * (i + 1), size * j: size * (j + 1)]))
 
     return Q_inst
