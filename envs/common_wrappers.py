@@ -265,4 +265,4 @@ class RescaleImageEnv(gym.ObservationWrapper):
 
     @staticmethod
     def process(frame, size):
-        return np.array(Image.fromarray(frame).resize(size, resample=Image.BILINEAR), dtype=np.uint8)
+        return np.array(Image.fromarray(frame).resize(size, resample=Image.LANCZOS), dtype=np.uint8)

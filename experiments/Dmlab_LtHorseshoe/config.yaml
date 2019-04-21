@@ -15,7 +15,7 @@ train:
     entropy_weight: 0.001
 
     # intrinsic rewards
-    curiosity_weight: 0.01
+    curiosity_weight: 0.001
 
     # backups
     save_frequency: 3
@@ -31,6 +31,6 @@ environment:
     normalize_env: true
     noop_max: null
     fps: 15
-    episode_length_sec: 600
+    episode_length_sec: 120
     bot_count: 4 # [0, 6]
     bot_skill: 1 # [1, 5]
