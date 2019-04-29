@@ -7,17 +7,23 @@ import torch.optim as optim
 
 from curiosity.model import CuriosityRewarder
 from envs.utils import make_env
+from genetic_alorithms import Hyperparams
 from models.actor_critic_rnn import ActorCriticRNN as ActorCritic
 from utils import ensure_shared_grads, play_game, save_progress
 
 
-def train_worker(args, shared_model, total_steps, optimizer, lock):
+def train_worker(args, shared_model, total_steps, optimizer, lock, param_optimizer):
+    np.random.seed(hash(str(time.clock())) % (2**32))
+    
     env = make_env(args.environment)
     args = args.train
     if args.sample_entropy:
         args.entropy_weight = np.exp(
             np.random.uniform(np.log(0.0001), np.log(0.005)))
-
+    max_grad_norm = args.max_grad_norm
+    update_agent_frequency = args.update_agent_frequency
+    params = Hyperparams(args)
+        
     model = ActorCritic(env.observation_space.shape, env.action_space.n)
     model.train()
 
@@ -29,6 +35,7 @@ def train_worker(args, shared_model, total_steps, optimizer, lock):
     state = env.reset()
     state = torch.FloatTensor(state)
 
+    sum_reward = 0
     while True:
         model.load_state_dict(shared_model.state_dict())
         model.detach_hidden()
@@ -39,7 +46,7 @@ def train_worker(args, shared_model, total_steps, optimizer, lock):
         curiosity_rewards = []
         entropies = []
 
-        for step in range(args.update_agent_frequency):
+        for step in range(update_agent_frequency):
             value, logit = model(state.unsqueeze(0))
             prob = F.softmax(logit, dim=-1)
             log_prob = F.log_softmax(logit, dim=-1)
@@ -50,7 +57,7 @@ def train_worker(args, shared_model, total_steps, optimizer, lock):
             log_prob = log_prob.gather(1, action)
 
             next_state, reward, done, _ = env.step(action.numpy())
-
+            
             with total_steps.get_lock():
                 total_steps.value += 1
 
@@ -80,17 +87,15 @@ def train_worker(args, shared_model, total_steps, optimizer, lock):
         value_loss = 0
         gae = torch.zeros(1, 1)
         for i in reversed(range(len(rewards))):
-            # print(rewards[i], args.curiosity_weight * curiosity_rewards[i].detach())
-            R = args.gamma * R + rewards[i] + args.curiosity_weight * curiosity_rewards[i].detach()
+            R = params.gamma * R + rewards[i] + params.curiosity_weight * curiosity_rewards[i].detach()
             advantage = R - values[i]
             value_loss = value_loss + 0.5 * advantage.pow(2)
 
             # Generalized Advantage Estimataion
-            delta_t = rewards[i] + args.gamma * values[i + 1] - values[i]
-            gae = gae * args.gamma * args.tau + delta_t
+            delta_t = rewards[i] + params.gamma * values[i + 1] - values[i]
+            gae = gae * params.gamma * params.tau + delta_t
 
-            # print('lp:', log_probs[i], 'gae:', gae.detach(), 'ent:', entropies[i])
-            policy_loss = policy_loss - log_probs[i] * gae.detach() - args.entropy_weight * entropies[i]
+            policy_loss = policy_loss - log_probs[i] * gae.detach() - params.entropy_weight * entropies[i]
 
         curiosity_optimizer.zero_grad()
         curiosity_loss = sum(map(lambda x: x**2, curiosity_rewards)) / len(curiosity_rewards)
@@ -98,12 +103,17 @@ def train_worker(args, shared_model, total_steps, optimizer, lock):
         curiosity_optimizer.step()
 
         optimizer.zero_grad()
-        (policy_loss + args.value_weight * value_loss).backward()
-        torch.nn.utils.clip_grad_norm_(model.parameters(), args.max_grad_norm)
+        (policy_loss + params.value_weight * value_loss).backward()
+        torch.nn.utils.clip_grad_norm_(model.parameters(), max_grad_norm)
 
         with lock:
             ensure_shared_grads(model, shared_model)
             optimizer.step()
+        sum_reward += sum(rewards)
+        if done:
+            param_optimizer.push(params, sum_reward)
+            params = param_optimizer.pull()
+            sum_reward = 0
 
 
 def test_worker(args, shared_model, total_steps, optimizer):
