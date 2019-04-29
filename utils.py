@@ -10,6 +10,8 @@ import os
 def play_game(model, env):
     args = model.config.train
     state = env.reset()
+    prev_action = torch.zeros((env.action_space.n))
+    prev_reward = torch.zeros((1))
     model.reset_hidden()
     done = False
     total_reward = 0.0
@@ -23,7 +25,7 @@ def play_game(model, env):
     while not done:
         state = torch.FloatTensor(state)
         with torch.no_grad():
-            value, logit = model.forward(state.unsqueeze(0))
+            value, logit = model.forward(state.unsqueeze(0), prev_action.unsqueeze(0), prev_reward.unsqueeze(0))
         prob = F.softmax(logit, dim=-1)
         log_prob = F.log_softmax(logit, dim=-1)
         entropy = -(log_prob * prob).sum(1, keepdim=True)
@@ -31,7 +33,10 @@ def play_game(model, env):
         log_prob = log_prob.gather(1, action)
 
         state, reward, done, _ = env.step(prob[0].max(0)[1].item())
-
+        prev_action = torch.zeros((env.action_space.n))
+        prev_action[prob[0].max(0)[1].item()] = 1
+        prev_reward = torch.ones((1)) * reward
+        
         entropies.append(entropy.numpy()[0][0])
         values.append(value.numpy()[0][0])
         log_probs.append(log_prob.numpy()[0][0])

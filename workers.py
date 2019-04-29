@@ -26,6 +26,8 @@ def train_worker(args, shared_model, total_steps, optimizer, lock):
 
     curiosity_optimizer = optim.Adam(curiosity_rewarder.parameters())
 
+    prev_action = torch.zeros((env.action_space.n))
+    prev_reward = torch.zeros((1))
     state = env.reset()
     state = torch.FloatTensor(state)
 
@@ -40,7 +42,7 @@ def train_worker(args, shared_model, total_steps, optimizer, lock):
         entropies = []
 
         for step in range(args.update_agent_frequency):
-            value, logit = model(state.unsqueeze(0))
+            value, logit = model(state.unsqueeze(0), prev_action.unsqueeze(0), prev_reward.unsqueeze(0))
             prob = F.softmax(logit, dim=-1)
             log_prob = F.log_softmax(logit, dim=-1)
             entropy = -(log_prob * prob).sum(1, keepdim=True)
@@ -50,12 +52,17 @@ def train_worker(args, shared_model, total_steps, optimizer, lock):
             log_prob = log_prob.gather(1, action)
 
             next_state, reward, done, _ = env.step(action.numpy())
-
+            prev_action = torch.zeros((env.action_space.n))
+            prev_action[action] = 1
+            prev_reward = torch.ones((1)) * reward
+            
             with total_steps.get_lock():
                 total_steps.value += 1
 
             if done:
                 next_state = env.reset()
+                prev_action = torch.zeros((env.action_space.n))
+                prev_reward = torch.zeros((1))
                 model.reset_hidden()
 
             next_state = torch.FloatTensor(next_state)
@@ -72,7 +79,7 @@ def train_worker(args, shared_model, total_steps, optimizer, lock):
 
         R = torch.zeros(1, 1)
         if not done:
-            value, _ = model(state.unsqueeze(0))
+            value, _ = model(state.unsqueeze(0), prev_action.unsqueeze(0), prev_reward.unsqueeze(0))
             R = value.detach()
 
         values.append(R)
