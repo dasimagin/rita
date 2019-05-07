@@ -1,7 +1,7 @@
 import gym
 
 from envs.common_wrappers import NoopResetEnv, ClipRewardEnv, MaxAndSkipEnv, ProcessFrame84
-from envs.common_wrappers import FrameStack, ExtraTimeLimit, ImageToPyTorch, NormalizedEnv
+from envs.common_wrappers import FrameStack, ExtraTimeLimit, ImageToPyTorch, NormalizedEnv, RescaleImageEnv
 from envs.dm_lab_env import Dmlab_env
 
 def make_atari(args):
@@ -20,8 +20,10 @@ def make_atari(args):
         env = NormalizedEnv(env)
     return env
 
-def make_dm_lab(args):
+def make_dm_lab(args, recording):
     env = Dmlab_env(args)
+    if recording:
+        env = RescaleImageEnv(env, size=(args.prev_frame_h, args.prev_frame_w))
     if args.clip_rewards:
         env = ClipRewardEnv(env)
     if args.skip_frames > 0:
@@ -33,10 +35,10 @@ def make_dm_lab(args):
         env = NormalizedEnv(env)
     return env
 
-def make_env(args):
-    if args.env_type == "atari":
-        return make_atari(args)
-    elif args.env_type == "dmlab":
-        return make_dm_lab(args)
+def make_env(env_args, recording=False):
+    if env_args.env_type == "atari":
+        return make_atari(env_args)
+    elif env_args.env_type == "dmlab":
+        return make_dm_lab(env_args, recording)
     else:
         raise NotImplemented

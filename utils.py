@@ -30,7 +30,7 @@ def play_game(model, env):
         action = prob.multinomial(num_samples=1).detach()
         log_prob = log_prob.gather(1, action)
 
-        state, reward, done, _ = env.step(action[0, 0])
+        state, reward, done, _ = env.step(prob[0].max(0)[1].item())
 
         entropies.append(entropy.numpy()[0][0])
         values.append(value.numpy()[0][0])
@@ -67,20 +67,18 @@ def play_game(model, env):
     return total_reward, ep_len, policy_loss, value_loss, entropy
 
 
-def record_video(model, env, games_count=2):
+def record_video(model, env):
     env_monitor = gym.wrappers.Monitor(env, directory='videos', force=True)
-    results = []
-    for _ in range(games_count):
-        reward, length, policy_loss, value_loss, entropy = play_game(model, env_monitor)
-        results.append({
-            'reward': reward,
-            'len': length,
-            'mean policy loss': policy_loss,
-            'mean value loss': value_loss,
-            'mean entropy percentage': entropy
-        })
+    reward, length, policy_loss, value_loss, entropy = play_game(model, env_monitor)
     env_monitor.close()
-    return results
+    result = {
+        'reward': reward,
+        'len': length,
+        'mean policy loss': policy_loss,
+        'mean value loss': value_loss,
+        'mean entropy percentage': entropy
+    }
+    return result
 
 
 def save_progress(args, model, optimizer, steps):

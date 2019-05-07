@@ -21,13 +21,17 @@ ACTIONS = [
         _action(0, 0, 0, 0, 0, 0, 0),
         _action(0, 0, 0, -1, 0, 0, 0),
         _action(0, 0, 0, 1, 0, 0, 0)
+    ],
+    [
+        _action(0, 0, 0, 0, 0, 0, 0),
+        _action(0, 0, 0, 0, 1, 0, 0)
     ]
 ]
 
 class MultiDiscrete:
     def __init__(self):
         self.nvec = np.asarray(
-            [3, 3, 3],
+            [len(ACTIONS[i]) for i in range(len(ACTIONS))],
             dtype=np.int64
         )
         self.n = self.nvec.prod()
@@ -53,8 +57,13 @@ class Dmlab_env(gym.Env):
             'fps': str(args.fps),
             'width': str(args.frame_w),
             'height': str(args.frame_h),
-            'appendCommand': '/seta timelimit %d' %args.episode_timelimit,
+            'episodeLengthSeconds': str(args.episode_length_sec),
         }
+        if args.bot_count is not None:
+            level_config['color'] = str(False)
+            level_config['botCount'] = str(args.bot_count)
+        if args.bot_skill is not None:
+            level_config['skill'] = str(args.bot_skill)
         self.env = deepmind_lab.Lab(
             args.env_name,
             ['RGB_INTERLEAVED'],
@@ -81,7 +90,7 @@ class Dmlab_env(gym.Env):
         if not done:
             obs = self.env.observations()['RGB_INTERLEAVED']
         else:
-            obs = np.zeros(self.observation_space.shape)
+            obs = np.zeros(self.observation_space.shape, dtype=np.uint8)
         return obs, reward, done, {}
 
     def reset(self):
