@@ -15,19 +15,21 @@ class ActorCriticRNN(torch.nn.Module):
         self.cnn_features = nn.Sequential(
             nn.Conv2d(observation_shape[0], 32, 3, stride=2, padding=1),
             nn.ELU(),
-            nn.Conv2d(32, 32, 3, stride=2, padding=1),
+            nn.Conv2d(32, 32, 3, stride=1, padding=1),
+            nn.MaxPool2d(2, 2),
             nn.ELU(),
             nn.Conv2d(32, 32, 3, stride=1, padding=1),
             nn.MaxPool2d(2, 2),
             nn.ELU(),
-            nn.Conv2d(32, 32, 3, stride=2, padding=1),
+            nn.Conv2d(32, 32, 3, stride=1, padding=1),
+            nn.MaxPool2d(2, 2),
             nn.ELU()
         )
         self.cnn_output_size = self._cnn_features_size(observation_shape)
 
-        self.lstm = nn.LSTMCell(self.cnn_output_size, 256)
-        self.critic_linear = nn.Linear(256, 1)
-        self.actor_linear = nn.Linear(256, n_actions)
+        self.lstm = nn.LSTMCell(self.cnn_output_size, 192)
+        self.critic_linear = nn.Linear(192, 1)
+        self.actor_linear = nn.Linear(192, n_actions)
 
         self.apply(xavier_weights_init)
         self.reset_hidden()
@@ -42,8 +44,8 @@ class ActorCriticRNN(torch.nn.Module):
         return value, logits
 
     def reset_hidden(self):
-        self.cx = torch.zeros(1, 256)
-        self.hx = torch.zeros(1, 256)
+        self.cx = torch.zeros(1, 192)
+        self.hx = torch.zeros(1, 192)
 
     def detach_hidden(self):
         self.cx = self.cx.detach()
