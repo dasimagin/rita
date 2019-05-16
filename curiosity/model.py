@@ -13,14 +13,15 @@ class CuriosityRewarder(nn.Module):
         self.mean = 0
         self.mean_sq = 1
         
-        self.fc1 = nn.Linear(self.conv_features.cnn_output_size + n_actions, 5000)
-        self.fc2 = nn.Linear(5000 + n_actions, self.conv_features.cnn_output_size)
-        
+        self.fc1 = nn.Linear(self.conv_features.cnn_output_size + n_actions, 3000)
+        self.fc2 = nn.Linear(3000 + n_actions, self.conv_features.cnn_output_size)
+
     def forward(self, state, action_oh):
         with torch.no_grad():
             conv_state_features = self.conv_features(state)
         x = torch.cat([conv_state_features, action_oh], dim=1)
         x = F.relu(self.fc1(x))
+        x = F.dropout(x, p=0.5, training=self.training)
         x = torch.cat([x, action_oh], dim=1)
         x = F.relu(self.fc2(x))
         return x
