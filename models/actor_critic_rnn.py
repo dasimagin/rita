@@ -16,13 +16,13 @@ class ActorCriticRNN(torch.nn.Module):
             nn.Conv2d(observation_shape[0], 32, 3, stride=1, padding=1),
             nn.MaxPool2d(2, 2),
             nn.ELU(),
-            nn.Conv2d(32, 64, 3, stride=1, padding=1),
+            nn.Conv2d(32, 32, 3, stride=1, padding=1),
             nn.MaxPool2d(2, 2),
             nn.ELU(),
-            nn.Conv2d(64, 64, 3, stride=1, padding=1),
+            nn.Conv2d(32, 32, 3, stride=1, padding=1),
             nn.MaxPool2d(2, 2),
             nn.ELU(),
-            nn.Conv2d(64, 32, 3, stride=1, padding=1),
+            nn.Conv2d(32, 32, 3, stride=1, padding=1),
             nn.MaxPool2d(2, 2),
             nn.ELU()
         )

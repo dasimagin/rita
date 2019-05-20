@@ -21,7 +21,7 @@ class CuriosityRewarder(nn.Module):
             conv_state_features = self.conv_features(state)
         x = torch.cat([conv_state_features, action_oh], dim=1)
         x = F.relu(self.fc1(x))
-        x = F.dropout(x, p=0.1, training=self.training)
+        x = F.dropout(x, p=0.3, training=self.training)
         x = torch.cat([x, action_oh], dim=1)
         x = F.relu(self.fc2(x))
         return x
