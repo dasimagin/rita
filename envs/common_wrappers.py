@@ -120,6 +120,9 @@ class NoopResetEnv(gym.Wrapper):
         self.noop_action = 0
         assert env.unwrapped.get_action_meanings()[0] == 'NOOP'
 
+    def step(self, action):
+        return self.env.step(action)
+
     def reset(self, **kwargs):
         """ Do no-op action for a number of steps in [1, noop_max]."""
         self.env.reset(**kwargs)
@@ -259,7 +262,7 @@ class RescaleImageEnv(gym.ObservationWrapper):
         super(RescaleImageEnv, self).__init__(env)
         self.observation_space = gym.spaces.Box(low=0, high=255, shape=(size[0], size[1], 3), dtype=np.uint8)
         self.size = size
-        
+
     def observation(self, obs):
         return RescaleImageEnv.process(obs, size=self.size)
 

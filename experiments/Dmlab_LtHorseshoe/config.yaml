@@ -7,6 +7,7 @@ train:
     agents_n: 32
     update_agent_frequency: 40
     sample_entropy: false
+    sample_lr: false
 
     # loss
     gamma: 0.99 # train discount coef
@@ -17,8 +18,13 @@ train:
     # intrinsic rewards
     curiosity_weight: 0.001
 
+    # auxiliary tasks
+    use_pixel_control: true
+    use_reward_prediction: true
+    pc_coef: 0.001
+
     # backups
-    save_frequency: 3
+    save_frequency: 5
 
 environment:
     env_type: "dmlab"
@@ -33,4 +39,4 @@ environment:
     fps: 15
     episode_length_sec: 120
     bot_count: 4 # [0, 6]
-    bot_skill: 1 # [1, 5]
+    bot_skill: 3 # [1, 5]

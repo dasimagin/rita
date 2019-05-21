@@ -19,18 +19,22 @@ def play_game(model, env):
     log_probs = []
     entropies = []
     rewards = []
+    last_act = 0
+    sum_reward = 0
 
     while not done:
         state = torch.FloatTensor(state)
         with torch.no_grad():
-            value, logit = model.forward(state.unsqueeze(0))
-        prob = F.softmax(logit, dim=-1)
+            value, logit = model.forward((state.unsqueeze(0), last_act, sum_reward))
+        prob = F.relu(F.softmax(logit, dim=-1))
         log_prob = F.log_softmax(logit, dim=-1)
         entropy = -(log_prob * prob).sum(1, keepdim=True)
         action = prob.multinomial(num_samples=1).detach()
         log_prob = log_prob.gather(1, action)
 
         state, reward, done, _ = env.step(prob[0].max(0)[1].item())
+        last_act = prob[0].max(0)[1].item()
+        sum_reward += reward
 
         entropies.append(entropy.numpy()[0][0])
         values.append(value.numpy()[0][0])
@@ -58,25 +62,35 @@ def play_game(model, env):
         policy_loss -= log_probs[i] * gae
         entropy += entropies[i]
 
-    policy_loss /= ep_len
-    value_loss /= ep_len
-    entropy /= ep_len
+    stats = dict()
+    stats['total_reward'] = total_reward
+    stats['ep_len'] = ep_len
+    stats['policy_loss'] = policy_loss / ep_len
+    stats['value_loss'] = value_loss / ep_len
+    stats['entropy'] = entropy / ep_len
     max_entropy = np.log(env.action_space.n)
-    entropy /= max_entropy
+    stats['entropy'] /= max_entropy
+    if model.config.train.use_pixel_control:
+        stats['pc_loss'] = model.pc_loss().detach().numpy()
+    if model.config.train.use_reward_prediction:
+        stats['rp_loss'] = model.rp_loss().detach().numpy()
 
-    return total_reward, ep_len, policy_loss, value_loss, entropy
+    model.reset()
+
+    return stats
 
 
 def record_video(model, env):
     env_monitor = gym.wrappers.Monitor(env, directory='videos', force=True)
     reward, length, policy_loss, value_loss, entropy = play_game(model, env_monitor)
+    stats = play_game(model, env_monitor)
     env_monitor.close()
     result = {
-        'reward': reward,
-        'len': length,
-        'mean policy loss': policy_loss,
-        'mean value loss': value_loss,
-        'mean entropy percentage': entropy
+        'reward': stats['total_reward'],
+        'len': stats['ep_len'],
+        'mean policy loss': stats['policy_loss'],
+        'mean value loss': stats['value_loss'],
+        'mean entropy percentage': stats['entropy']
     }
     return result
 
