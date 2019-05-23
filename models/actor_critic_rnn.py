@@ -2,6 +2,7 @@ import torch
 import torch.nn as nn
 
 from torch.nn.functional import softmax
+import torch.nn.functional as F
 
 
 def xavier_weights_init(layer):
