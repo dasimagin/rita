@@ -5,7 +5,6 @@ echo "
 #   Build rule for Python and Numpy.
 #   This rule works for Debian and Ubuntu. Other platforms might keep the
 #   headers in different places, cf. 'How to build DeepMind Lab' in build.md.
-
 cc_library(
     name = \"python\",
     hdrs = glob([
@@ -22,12 +21,10 @@ cc_library(
 cd python/pip_package
 echo "
 import setuptools
-
 REQUIRED_PACKAGES = [
     'numpy >= 1.13.3',
     'six >= 1.10.0',
 ]
-
 setuptools.setup(
     name='DeepMind Lab',
     version='1.0',

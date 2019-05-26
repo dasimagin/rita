@@ -5,6 +5,11 @@ import torch.multiprocessing as mp
 from config import Config
 from envs.utils import make_env
 from models.actor_critic_rnn import ActorCriticRNN as ActorCritic
+from auxiliary_tasks.pixel_control import PixelControlWrapper
+from auxiliary_tasks.agent_wrapper import BaseWrapper
+from auxiliary_tasks.reward_prediction import RewardPredictionWrapper
+from auxiliary_tasks.value_replay import ValueReplayWrapper
+from auxiliary_tasks.experience import *
 from optim.shared_optim import SharedAdam
 from workers import test_worker, train_worker
 
@@ -26,6 +31,17 @@ if __name__ == '__main__':
     env = make_env(config.environment)
 
     shared_model = ActorCritic(env.observation_space.shape, env.action_space.n)
+    shared_model = BaseWrapper(shared_model)
+    if (config.train.use_pixel_control or
+            config.train.use_reward_prediction or
+            config.train.use_value_replay):
+        shared_model = ExperienceWrapper(shared_model)
+    if config.train.use_pixel_control:
+        shared_model = PixelControlWrapper(shared_model, config.train.gamma, config.train.pc_coef)
+    if config.train.use_reward_prediction:
+        shared_model = RewardPredictionWrapper(shared_model, config.train.rp_coef)
+    if config.train.use_value_replay:
+        shared_model = ValueReplayWrapper(shared_model)
     if config.train.pretrained_weights is not None:
         shared_model.load_state_dict(torch.load(config.train.pretrained_weights))
     shared_model.share_memory()

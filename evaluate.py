@@ -5,6 +5,11 @@ import torch
 from config import Config
 from envs.utils import make_env
 from models.actor_critic_rnn import ActorCriticRNN as ActorCritic
+from auxiliary_tasks.pixel_control import PixelControlWrapper
+from auxiliary_tasks.agent_wrapper import BaseWrapper
+from auxiliary_tasks.reward_prediction import RewardPredictionWrapper
+from auxiliary_tasks.value_replay import ValueReplayWrapper
+from auxiliary_tasks.experience import *
 from utils import record_video
 
 parser = argparse.ArgumentParser(description='A3C')
@@ -29,6 +34,16 @@ if __name__ == '__main__':
         config.environment.frame_w = max(config.environment.frame_w, 256)
     env = make_env(config.environment, recording=True)
     model = ActorCritic(env.observation_space.shape, env.action_space.n)
+    model = BaseWrapper(model)
+    if (config.train.use_pixel_control or
+            config.train.use_reward_prediction):
+        model = ExperienceWrapper(model)
+    if config.train.use_pixel_control:
+        model = PixelControlWrapper(model, config.train.gamma, config.train.pc_coef)
+    if config.train.use_reward_prediction:
+        model = RewardPredictionWrapper(model, config.train.rp_coef)
+    if config.train.use_value_replay:
+        model = ValueReplayWrapper(model)
     model.config = config
     if cmd_args.pretrained_weights is not None:
         model.load_state_dict(torch.load(cmd_args.pretrained_weights))

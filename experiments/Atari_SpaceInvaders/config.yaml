@@ -7,6 +7,7 @@ train:
     agents_n: 16
     update_agent_frequency: 20
     sample_entropy: false
+    sample_lr: false
 
     # loss
     gamma: 0.99 # train discount coef
@@ -17,8 +18,15 @@ train:
     # intrinsic rewards
     curiosity_weight: 0.001
 
+    # auxiliary tasks
+    use_pixel_control: false
+    use_reward_prediction: false
+    use_value_replay: false
+    pc_coef: 0.001
+    rp_coef: 0.1
+
     # backups
-    save_frequency: 3
+    save_frequency: 5
 
 environment:
     env_type: "atari"

@@ -6,7 +6,8 @@ train:
     # a3c
     agents_n: 16
     update_agent_frequency: 60
-    sample_entropy: false
+    sample_entropy: true
+    sample_lr: true
 
     # loss
     gamma: 0.99 # train discount coef
@@ -17,8 +18,15 @@ train:
     # intrinsic rewards
     curiosity_weight: 0.001
 
+    # auxiliary tasks
+    use_pixel_control: true
+    use_reward_prediction: true
+    use_value_replay: true
+    pc_coef: 0.001
+    rp_coef: 0.1
+
     # backups
-    save_frequency: 4
+    save_frequency: 5
 
 environment:
     env_type: "dmlab"
