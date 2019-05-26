@@ -6,8 +6,8 @@ train:
     # a3c
     agents_n: 32
     update_agent_frequency: 40
-    sample_entropy: false
-    sample_lr: false
+    sample_entropy: true
+    sample_lr: true
 
     # loss
     gamma: 0.99 # train discount coef
