@@ -8,7 +8,7 @@ This is an PyTorch implementation of [Asynchronous Advantage Actor-Critic](https
 Tested on [DeepMind Lab](https://github.com/deepmind/lab) and gym-like environments.
 
 ## Dependencies
-* Python 3
+* Python 3.6
 * PyTorch, gym, NumPy 
 * [Bazel](https://docs.bazel.build/versions/master/install.html)
 * DeepMind Lab
