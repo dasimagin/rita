@@ -9,7 +9,7 @@ Tested on [DeepMind Lab](https://github.com/deepmind/lab) and gym-like environme
 
 ## Dependencies
 * Python 3.6
-* PyTorch, gym, NumPy 
+* PyTorch 1.0, gym 0.12, NumPy 1.14
 * [Bazel](https://docs.bazel.build/versions/master/install.html)
 * DeepMind Lab
 
